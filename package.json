@@ -20,5 +20,9 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
     "hardhat": "^2.14.0"
+  },
+  "dependencies": {
+    "@faircrypto/xen-crypto": "^0.3.2",
+    "@faircrypto/xenft": "^0.3.0"
   }
 }
