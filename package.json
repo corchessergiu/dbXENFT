@@ -1,0 +1,24 @@
+{
+  "name": "dbxenft",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/corchessergiu/dbXENFT.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/corchessergiu/dbXENFT/issues"
+  },
+  "homepage": "https://github.com/corchessergiu/dbXENFT#readme",
+  "keywords": [],
+  "description": "",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "hardhat": "^2.14.0"
+  }
+}
