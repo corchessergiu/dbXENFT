@@ -16,7 +16,6 @@ import "./interfaces/IXENProxying.sol";
 import "./libs/MintInfo.sol";
 import "./libs/Metadata.sol";
 import "./libs/Array.sol";
-
 /*
 
         \\      //   |||||||||||   |\      ||       A CRYPTOCURRENCY FOR THE MASSES
