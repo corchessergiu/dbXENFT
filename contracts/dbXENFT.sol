@@ -227,21 +227,16 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         uint256 amplifier,
         uint256 eeaRate
     ) private view returns (uint256) {
+        uint256 penalty;
         if(block.timestamp > maturityTs){
             uint256 secsLate = block.timestamp - maturityTs;
-            uint256 penalty = _penalty(secsLate);
-            uint256 rankDiff = IXENCrypto(xenCrypto).globalRank() - cRank;
-            uint256 rankDelta = rankDiff > 2 ? rankDiff : 2;
-            uint256 EAA = (1000 + eeaRate);
-            uint256 reward = IXENCrypto(xenCrypto).getGrossReward(rankDelta, amplifier, term, EAA);
-            return (reward * (100 - penalty)) / 100;
-        } else {
-            uint256 rankDiff = IXENCrypto(xenCrypto).globalRank() - cRank;
-            uint256 rankDelta = rankDiff > 2 ? rankDiff : 2;
-            uint256 EAA = (1000 + eeaRate);
-            uint256 reward = IXENCrypto(xenCrypto).getGrossReward(rankDelta, amplifier, term, EAA);
-            return reward;
+            penalty = _penalty(secsLate);
         }
+        uint256 rankDiff = IXENCrypto(xenCrypto).globalRank() - cRank;
+        uint256 rankDelta = rankDiff > 2 ? rankDiff : 2;
+        uint256 EAA = (1000 + eeaRate);
+        uint256 reward = IXENCrypto(xenCrypto).getGrossReward(rankDelta, amplifier, term, EAA);
+        return (reward * (100 - penalty)) / 100;
     }
 
     function _calculateUserMintReward(uint256 tokenId, uint256 mintInfo) internal view returns(uint256 userMintReward) {
