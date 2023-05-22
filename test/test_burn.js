@@ -261,9 +261,14 @@ describe.only("Test burn functionality", async function() {
         DBXENFTLocal = await dbXENFTLocal.deploy(DBX.address, xenft.address, XENContract.address, ethers.constants.AddressZero, ethers.constants.AddressZero);
         await DBXENFTLocal.deployed();
 
-        console.log(ethers.utils.formatEther(await DBX.balanceOf(deployer.address)));
+        //console.log(ethers.utils.formatEther(await DBX.balanceOf(deployer.address)));
+        console.log(await DBXENFTLocal.getCurrentCycle())
+        console.log("before stake");
+        console.log(ethers.utils.formatEther(await DBXENFTLocal.userPowerPerCycle(0, deployer.address)))
         await DBX.approve(DBXENFTLocal.address, ethers.utils.parseEther("30000000000"))
         await DBXENFTLocal.stake(ethers.utils.parseEther("30"));
+        console.log("after stake");
+        console.log(ethers.utils.formatEther(await DBXENFTLocal.userPowerPerCycle(0, deployer.address)))
         console.log(ethers.utils.formatEther(await DBXENFTLocal.userStakedAmount(deployer.address)));
         await DBXENFTLocal.unstake(ethers.utils.parseEther("10"));
         console.log(ethers.utils.formatEther(await DBXENFTLocal.userStakedAmount(deployer.address)));

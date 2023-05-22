@@ -114,11 +114,11 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         uint256 userReward = _calculateUserMintReward(tokenId, mintInfo);
         uint256 fee = _calculateFee(userReward, xenft.xenBurned(tokenId), maturityTs, term) /10000;
         //require(msg.value >= fee, "dbXENFT: value less than protocol fee");
-        uint256 power = 10000000000000000000;
-        console.log("userReward  ", power);
-        console.log("totalPower before  ", totalPower);
+        uint256 power = userReward * 10 **18;
+        //console.log("userReward  ", power);
+        //console.log("totalPower before  ", totalPower);
         totalPower += power;
-        console.log("totalPower  ", totalPower);
+        //console.log("totalPower  ", totalPower);
         userTotalPower[msg.sender] = userTotalPower[msg.sender] + power;
         userPowerPerCycle[getCurrentCycle()][msg.sender] = userPowerPerCycle[getCurrentCycle()][msg.sender] + power;
         console.log("userPowerPerCycle[getCurrentCycle()][msg.sender]  ", userPowerPerCycle[getCurrentCycle()][msg.sender]);
@@ -160,46 +160,47 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
     function setUpNewCycle() internal {
         if (alreadyUpdatePower[getCurrentCycle()] == false) {
             lastCyclePower = totalPower;
-            console.log("LA DIV ", totalPower);
+            //console.log("LA DIV ", totalPower);
             totalPower = (lastCyclePower * 10000) / 10020;
-            console.log("AFTER DIV ", totalPower);
+            //console.log("AFTER DIV ", totalPower);
             alreadyUpdatePower[getCurrentCycle()] = true;
         }
     }
 
     function updateUserStake(address user) internal {
-        if(userCycleStake[userLastCycleStake[user]][user] != 0 && userLastCycleStake[user] != getCurrentCycle()){
-            userWithdrawableStake[msg.sender] = userWithdrawableStake[msg.sender] + userCycleStake[userLastCycleStake[user]][user];
-            userCycleStake[userLastCycleStake][user] = 0;
+        uint256 lastStakeCycle = userLastCycleStake[user];
+        if(userCycleStake[lastStakeCycle][user] != 0 && userLastCycleStake[user] != getCurrentCycle()){
+            userWithdrawableStake[msg.sender] = userWithdrawableStake[msg.sender] + userCycleStake[lastStakeCycle][user];
+            userCycleStake[lastStakeCycle][user] = 0;
             userLastCycleStake[user] = 0;
         }
     }
 
     function updateUserPower(address user) internal {
-        console.log("UPDATE USER POWER");
+        //console.log("UPDATE USER POWER");
         uint256 lastActiveCycle = lastActiveCycle[user];
         uint256 currentCycle = getCurrentCycle();
-        console.log("active cycle last ",lastActiveCycle);
-        console.log("currnet cycle ",currentCycle);
+        //console.log("active cycle last ",lastActiveCycle);
+        //console.log("currnet cycle ",currentCycle);
         if(lastActiveCycle < currentCycle && lastActiveCycle != 0){
             uint256 numberOfInactiveCycles = currentCycle - lastActiveCycle;
-             console.log("numberOfInactiveCycles ", numberOfInactiveCycles);
+             //console.log("numberOfInactiveCycles ", numberOfInactiveCycles);
             for(uint256 index = lastActiveCycle ; index < numberOfInactiveCycles; index++) {
-                console.log("index ",index);
-                console.log("before div ", userTotalPower[user]);
-                console.log("before div pe ciclu", userPowerPerCycle[index][user]);
+                //console.log("index ",index);
+                //console.log("before div ", userTotalPower[user]);
+                //console.log("before div pe ciclu", userPowerPerCycle[index][user]);
                 userPowerPerCycle[index][user] = userPowerPerCycle[index][user] * 10000 / 10020;
                 userTotalPower[user] = userTotalPower[user] * 10000 / 10020;
-                console.log("after div ", userTotalPower[user]);
-                console.log("after div pe ciclu", userPowerPerCycle[index][user]);
+                //console.log("after div ", userTotalPower[user]);
+                //console.log("after div pe ciclu", userPowerPerCycle[index][user]);
             } 
         }
         if( currentCycle == 0){
-            console.log("here");
+            //console.log("here");
             userPowerPerCycle[0][user] = userPowerPerCycle[0][user] * 10000 / 10020;
             userTotalPower[user] = userTotalPower[user] * 10000 / 10020;
-            console.log("after here ", userTotalPower[user]);
-            console.log("after here", userPowerPerCycle[0][user]);
+            //console.log("after here ", userTotalPower[user]);
+            //console.log("after here", userPowerPerCycle[0][user]);
         }
     }
 
@@ -209,11 +210,11 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         nonReentrant()
     {
         require(amount > 0, "DBXen: amount is zero");
-        updateUserPower(user);
+        updateUserPower(msg.sender);
         updateUserStake(msg.sender);
         uint256 currentCycle = getCurrentCycle();
-        userPowerPerCycle[currentCycle][msg.sender] = userPowerPerCycle[currentCycle][msg.sender] + 1;
-        userTotalPower[msg.sender] = userTotalPower[msg.sender] + 1;
+        userPowerPerCycle[currentCycle][msg.sender] = userPowerPerCycle[currentCycle][msg.sender] + 1*10**18;
+        userTotalPower[msg.sender] = userTotalPower[msg.sender] + 1*10**18;
         totalPower = totalPower + 1;
         userLastCycleStake[msg.sender] = currentCycle;
         userStakedAmount[msg.sender] = userStakedAmount[msg.sender] + amount;
@@ -234,8 +235,11 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         updateUserPower(msg.sender);
         updateUserStake(msg.sender);
         uint256 currentCycle = getCurrentCycle();
-        userStakedAmount[msg.sender] = userStakedAmount[msg.sender] - amount;
-        userWithdrawableStake[msg.sender] = userWithdrawableStake[msg.sender] - amount;
+        if( userStakedAmount[msg.sender] >= amount){
+            userStakedAmount[msg.sender] = userStakedAmount[msg.sender] - amount;
+        }
+        if(userWithdrawableStake[msg.sender] >= amount)
+            userWithdrawableStake[msg.sender] = userWithdrawableStake[msg.sender] - amount;
         dxn.safeTransfer(msg.sender, amount);
     }
 
