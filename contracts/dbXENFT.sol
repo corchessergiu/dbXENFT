@@ -60,6 +60,8 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
      */
     uint256 public immutable i_periodDuration;
 
+    uint256 public extraPowerValue;
+
     /**
      * Contract creation timestamp.
      * Initialized in constructor.
@@ -69,6 +71,8 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
     uint256 public totalPower;
 
     mapping(uint256 => bool) public alreadyUpdateGlobalPower; 
+    
+    mapping(uint256 => bool) public alreadyUpdateExtraPower; 
 
     mapping(address => mapping(uint256 => bool)) public alreadyUpdateUserPower; 
 
@@ -79,7 +83,6 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
      */
     mapping(address => uint256) public lastActiveCycle;
     
-
     /**
      * The total amount of accrued fees per cycle.
      */
@@ -108,6 +111,8 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         newImagePeriodDuration = SECONDS_IN_YEAR;
         i_periodDuration = 1 days;
         i_initialTimestamp = block.timestamp;
+        extraPowerValue = 10_000_000;
+        alreadyUpdateExtraPower[0] = true;
     }
 
     modifier updateStats(uint256 tokenId) {
@@ -137,8 +142,8 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
     function onTokenBurned(address user, uint256 amount) external {
         require(msg.sender == address(xenft), "dbXENFT: illegal callback caller");
         uint256 currentCycle = getCurrentCycle();
-        //updateWithdrawableStakeAmount(user,currentCycle);
-        //updateUserPower(user);
+        updateWithdrawableStakeAmount(user,currentCycle);
+        updateUserPower(user);
         lastActiveCycle[user] = currentCycle;
     }
 
@@ -177,7 +182,7 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
                         lastCyclePower = totalPower;
                         calculateTotalPower(totalPower, lastGlobalActiveCycle);
                     }
-                    calculateExtraPower(userWithdrawableStake[user],user);
+                    calculateExtraPower(userWithdrawableStake[user],user,currentCycle);
                     lastActiveCycleLocal = lastActiveCycleLocal +1;
                     lastActiveCycle[user] = lastActiveCycleLocal;
                     console.log("lastActiveCycle ",lastActiveCycle[user]);
@@ -262,13 +267,18 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         console.log("alreadyUpdateGlobalPower[cycle] ", alreadyUpdateGlobalPower[cycle]);
     }
     
-    function calculateExtraPower(uint256 amountOfDXNStaked, address user) internal{
+    function calculateExtraPower(uint256 amountOfDXNStaked, address user, uint256 cycle) internal{
         console.log("CALCULATE EXTRA POWER");
         console.log("BEFORE");
         console.log("amountOfDXNStaked ",amountOfDXNStaked);
         console.log("userTotalPower[user] ",userTotalPower[user]);
         console.log("totalPower ", totalPower);
-        uint256 extraAmountOfPower = amountOfDXNStaked * 10000000;
+        if(alreadyUpdateExtraPower[cycle] == false){
+            extraPowerValue = extraPowerValue - 1_000;
+            alreadyUpdateExtraPower[cycle] = true;
+        }
+        console.log("EXTRA POWER ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", extraPowerValue);
+        uint256 extraAmountOfPower = amountOfDXNStaked * extraPowerValue;
         console.log(extraAmountOfPower);
         userTotalPower[user] = userTotalPower[user]  + extraAmountOfPower;
         totalPower = totalPower + extraAmountOfPower;

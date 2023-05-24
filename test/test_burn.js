@@ -272,7 +272,7 @@ describe.only("Test burn functionality", async function() {
         console.log(ethers.utils.formatEther(await DBXENFTLocal.userStakedAmount(deployer.address)));
     });
 
-    it("Complet flow test for power, stake and unstake functionality", async() => {
+    it.only("Complet flow test for power, stake and unstake functionality", async() => {
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
 
@@ -336,7 +336,7 @@ describe.only("Test burn functionality", async function() {
 
     });
 
-    it.only("Test fee", async() => {
+    it("Test fee", async() => {
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
 
