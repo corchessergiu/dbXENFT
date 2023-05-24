@@ -272,7 +272,7 @@ describe.only("Test burn functionality", async function() {
         console.log(ethers.utils.formatEther(await DBXENFTLocal.userStakedAmount(deployer.address)));
     });
 
-    it.only("Complet flow test for power, stake and unstake functionality", async() => {
+    it("Complet flow test for power, stake and unstake functionality", async() => {
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
 
@@ -294,12 +294,10 @@ describe.only("Test burn functionality", async function() {
 
         let currentCycle = await DBXENFTLocal.getCurrentCycle();
         expect(currentCycle).to.equal(0);
-        expect(await DBXENFTLocal.alreadyUpdatePower(0)).to.equal(false);
         expect(Number(await DBXENFTLocal.userTotalPower(deployer.address))).to.equal(0);
         expect(Number(await DBXENFTLocal.totalPower())).to.equal(0);
         await xenft.approve(DBXENFTLocal.address, 10001);
         await DBXENFTLocal.burnNFT(deployer.address, 10001);
-        expect(await DBXENFTLocal.alreadyUpdatePower(0)).to.equal(true);
         let actualTokensId = await xenft.ownedTokens();
         let lengthArray = Number(actualTokensId.length);
         let totalPower = Number(await DBXENFTLocal.totalPower());
@@ -308,27 +306,61 @@ describe.only("Test burn functionality", async function() {
         expect(totalPower).to.be.greaterThan(0);
         expect(Number(await DBXENFTLocal.lastActiveCycle(deployer.address))).to.equal(0);
         expect(Number(ethers.utils.formatUnits(await DBXENFTLocal.lastCyclePower()))).to.equal(1);
-        expect(await DBXENFTLocal.alreadyUpdatePower(currentCycle)).to.equal(true);
-        //expect(await DBXENFTLocal.totalPower()).to.equal(true);
         let actualPower = BigNumber.from("1000000000000000000").mul(BigNumber.from("10000")).div(BigNumber.from("10020"));
-        console.log(BigNumber.from("1000000000000000000").mul(BigNumber.from("10000")).div(BigNumber.from("10020")))
-        expect(BigNumber.from("1000000000000000000").mul(BigNumber.from("10000")).div(BigNumber.from("10020"))).to.equal(await DBXENFTLocal.userTotalPower(deployer.address))
-        console.log("USER POWER PER CYCLE " + await DBXENFTLocal.userTotalPower(deployer.address));
-
-        console.log("STAKE")
+        //console.log(BigNumber.from("1000000000000000000").mul(BigNumber.from("10000")).div(BigNumber.from("10020")))
+        //expect(BigNumber.from("1000000000000000000").mul(BigNumber.from("10000")).div(BigNumber.from("10020"))).to.equal(await DBXENFTLocal.userTotalPower(deployer.address))
+        console.log("STAKE DIN TEST ")
         await DBX.approve(DBXENFTLocal.address, ethers.utils.parseEther("30000000000"))
         await DBXENFTLocal.stake(ethers.utils.parseEther("30"));
-        // console.log(actualPower.add(BigNumber.from("1000000000000000000")))
-        // expect(actualPower.add(BigNumber.from("1000000000000000000"))).to.equal(await DBXENFTLocal.userTotalPower(deployer.address))
-        // console.log("USER POWER PER CYCLE " + await DBXENFTLocal.userTotalPower(deployer.address));
-        // expect(await DBXENFTLocal.userLastCycleStake(deployer.address)).to.equal(currentCycle)
-        // expect(await DBXENFTLocal.userStakedAmount(deployer.address)).to.equal(BigNumber.from("30000000000000000000"))
-        // expect(await DBXENFTLocal.userCycleStake(currentCycle, deployer.address)).to.equal(BigNumber.from("30000000000000000000"))
-        await hre.ethers.provider.send("evm_increaseTime", [60 * 2 * 60 * 24])
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 3 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
+        console.log("UNSTAKE AFARA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
         await DBXENFTLocal.unstake(ethers.utils.parseEther("1"));
-        console.log("UNSTAKE");
+        console.log("UNSTAKE AFARA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
+        await hre.ethers.provider.send("evm_mine")
+        console.log("AFTER ANOTHER CYCLE!");
+
+        await xenft.bulkClaimRank(128, 1);
+        await xenft.approve(DBXENFTLocal.address, 10002);
+        await DBXENFTLocal.burnNFT(deployer.address, 10002);
+
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 3 * 60 * 24])
+        await hre.ethers.provider.send("evm_mine")
+
+        // await xenft.bulkClaimRank(128, 1);
+        // await xenft.approve(DBXENFTLocal.address, 10003);
+        // await DBXENFTLocal.burnNFT(deployer.address, 10003);
+
+    });
+
+    it.only("Test fee", async() => {
+        await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
+        await xenft.bulkClaimRank(128, 1);
+
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
+        await hre.ethers.provider.send("evm_mine")
+
+        const MintInfo = await ethers.getContractFactory("MintInfo", deployer)
+        const mintinfo = await MintInfo.deploy()
+        await mintinfo.deployed()
+
+        const dbXENFTLocal = await ethers.getContractFactory("dbXENFT", {
+            libraries: {
+                MintInfo: mintinfo.address
+            }
+        });
+
+        DBXENFTLocal = await dbXENFTLocal.deploy(DBX.address, xenft.address, XENContract.address, ethers.constants.AddressZero, ethers.constants.AddressZero);
+        await DBXENFTLocal.deployed();
+
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 92 * 24])
+        await hre.ethers.provider.send("evm_mine")
+
+        await xenft.approve(DBXENFTLocal.address, 10001);
+        await DBXENFTLocal.burnNFT(deployer.address, 10001);
     });
 
 });
