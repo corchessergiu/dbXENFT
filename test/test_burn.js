@@ -100,7 +100,7 @@ describe.only("Test burn functionality", async function() {
         expect(await DBXENFTLocal.alreadyUpdatePower(0)).to.equal(false);
         expect(Number(await DBXENFTLocal.totalPower())).to.equal(0);
         await xenft.approve(DBXENFTLocal.address, 10001);
-        await DBXENFTLocal.burnNFT(deployer.address, 10001);
+        await DBXENFTLocal.burnNFT(10001);
         expect(await DBXENFTLocal.alreadyUpdatePower(0)).to.equal(true);
         let actualTokensId = await xenft.ownedTokens();
         let lengthArray = Number(actualTokensId.length);
@@ -133,7 +133,7 @@ describe.only("Test burn functionality", async function() {
         expect(Number(await DBXENFTLocal.userTotalPower(deployer.address))).to.equal(0);
         expect(Number(await DBXENFTLocal.totalPower())).to.equal(0);
         await xenft.approve(DBXENFTLocal.address, 10001);
-        await DBXENFTLocal.burnNFT(deployer.address, 10001);
+        await DBXENFTLocal.burnNFT(10001);
         expect(await DBXENFTLocal.alreadyUpdatePower(0)).to.equal(true);
         let actualTokensId = await xenft.ownedTokens();
         let lengthArray = Number(actualTokensId.length);
@@ -152,7 +152,7 @@ describe.only("Test burn functionality", async function() {
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(DBXENFTLocal.address, 10002);
-        await DBXENFTLocal.burnNFT(deployer.address, 10002);
+        await DBXENFTLocal.burnNFT(10002);
     });
 
     it("Test power functionality", async() => {
@@ -175,7 +175,7 @@ describe.only("Test burn functionality", async function() {
         DBXENFTLocal = await dbXENFTLocal.deploy(DBX.address, xenft.address, XENContract.address, ethers.constants.AddressZero, ethers.constants.AddressZero);
         await DBXENFTLocal.deployed();
         await xenft.approve(DBXENFTLocal.address, 10001);
-        await DBXENFTLocal.burnNFT(deployer.address, 10001);
+        await DBXENFTLocal.burnNFT(10001);
 
         let actualTokensId = await xenft.ownedTokens();
         let lengthArray = Number(actualTokensId.length);
@@ -188,7 +188,7 @@ describe.only("Test burn functionality", async function() {
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(DBXENFTLocal.address, 10002);
-        await DBXENFTLocal.burnNFT(deployer.address, 10002);
+        await DBXENFTLocal.burnNFT(10002);
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
@@ -196,7 +196,7 @@ describe.only("Test burn functionality", async function() {
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(DBXENFTLocal.address, 10003);
-        await DBXENFTLocal.burnNFT(deployer.address, 10003);
+        await DBXENFTLocal.burnNFT(10003);
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 4 * 24])
         await hre.ethers.provider.send("evm_mine")
@@ -204,42 +204,42 @@ describe.only("Test burn functionality", async function() {
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(DBXENFTLocal.address, 10004);
-        await DBXENFTLocal.burnNFT(deployer.address, 10004);
+        await DBXENFTLocal.burnNFT(10004);
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(DBXENFTLocal.address, 10005);
-        await DBXENFTLocal.burnNFT(deployer.address, 10005);
+        await DBXENFTLocal.burnNFT(10005);
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(DBXENFTLocal.address, 10006);
-        await DBXENFTLocal.burnNFT(deployer.address, 10006);
+        await DBXENFTLocal.burnNFT(10006);
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(DBXENFTLocal.address, 10007);
-        await DBXENFTLocal.burnNFT(deployer.address, 10007);
+        await DBXENFTLocal.burnNFT(10007);
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(DBXENFTLocal.address, 10008);
-        await DBXENFTLocal.burnNFT(deployer.address, 10008);
+        await DBXENFTLocal.burnNFT(10008);
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(DBXENFTLocal.address, 10009);
-        await DBXENFTLocal.burnNFT(deployer.address, 10009);
+        await DBXENFTLocal.burnNFT(10009);
     });
 
     it("Test power functionality", async() => {
@@ -272,7 +272,7 @@ describe.only("Test burn functionality", async function() {
         console.log(ethers.utils.formatEther(await DBXENFTLocal.userStakedAmount(deployer.address)));
     });
 
-    it.only("Complet flow test for power, stake and unstake functionality", async() => {
+    it("Complet flow test for power, stake and unstake functionality", async() => {
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
 
@@ -297,7 +297,7 @@ describe.only("Test burn functionality", async function() {
         expect(Number(await DBXENFTLocal.userTotalPower(deployer.address))).to.equal(0);
         expect(Number(await DBXENFTLocal.totalPower())).to.equal(0);
         await xenft.approve(DBXENFTLocal.address, 10001);
-        await DBXENFTLocal.burnNFT(deployer.address, 10001);
+        await DBXENFTLocal.burnNFT(10001);
         let actualTokensId = await xenft.ownedTokens();
         let lengthArray = Number(actualTokensId.length);
         let totalPower = Number(await DBXENFTLocal.totalPower());
@@ -325,20 +325,30 @@ describe.only("Test burn functionality", async function() {
 
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(DBXENFTLocal.address, 10002);
-        await DBXENFTLocal.burnNFT(deployer.address, 10002);
+        await DBXENFTLocal.burnNFT(10002);
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 3 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
         // await xenft.bulkClaimRank(128, 1);
         // await xenft.approve(DBXENFTLocal.address, 10003);
-        // await DBXENFTLocal.burnNFT(deployer.address, 10003);
+        // await DBXENFTLocal.burnNFT(10003);
 
     });
 
-    it("Test fee", async() => {
+    it.only("Test fee", async() => {
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
+        await xenft.bulkClaimRank(128, 1);
+        await xenft.bulkClaimRank(128, 1);
+        await xenft.bulkClaimRank(128, 1);
+        await xenft.bulkClaimRankLimited(100, 1, ethers.utils.parseEther("250000000"));
+        await xenft.bulkClaimRankLimited(100, 1, ethers.utils.parseEther("500000000"));
+        await xenft.bulkClaimRankLimited(100, 1, ethers.utils.parseEther("1000000000"));
+        await xenft.bulkClaimRankLimited(100, 1, ethers.utils.parseEther("2000000000"));
+        await xenft.bulkClaimRankLimited(100, 1, ethers.utils.parseEther("2500000000"));
+        await xenft.bulkClaimRankLimited(100, 1, ethers.utils.parseEther("5000000000"));
+        await xenft.bulkClaimRankLimited(100, 1, ethers.utils.parseEther("10000000000"));
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
@@ -356,11 +366,57 @@ describe.only("Test burn functionality", async function() {
         DBXENFTLocal = await dbXENFTLocal.deploy(DBX.address, xenft.address, XENContract.address, ethers.constants.AddressZero, ethers.constants.AddressZero);
         await DBXENFTLocal.deployed();
 
-        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 92 * 24])
+        await xenft.approve(DBXENFTLocal.address, 10001);
+        await DBXENFTLocal.burnNFT(10001, { value: ethers.utils.parseEther("0.001") });
+
+        await xenft.approve(DBXENFTLocal.address, 10002);
+        await DBXENFTLocal.burnNFT(10002, { value: ethers.utils.parseEther("0.001") });
+        console.log("*************");
+
+        console.log("*************");
+        console.log("*************");
+        console.log("*************");
+        console.log("*************");
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
-        await xenft.approve(DBXENFTLocal.address, 10001);
-        await DBXENFTLocal.burnNFT(deployer.address, 10001);
+        await xenft.approve(DBXENFTLocal.address, 10003);
+        await DBXENFTLocal.burnNFT(10003, { value: ethers.utils.parseEther("0.001") });
+        console.log("*************");
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
+        await hre.ethers.provider.send("evm_mine")
+
+        console.log("*************");
+        await xenft.approve(DBXENFTLocal.address, 10004);
+        await DBXENFTLocal.burnNFT(10004, { value: ethers.utils.parseEther("0.001") });
+        console.log("*************");
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
+        await hre.ethers.provider.send("evm_mine")
+            // console.log("*************");
+            // console.log("*************");
+            // await xenft.approve(DBXENFT.address, 6001);
+            // await DBXENFT.burnNFT(6001);
+            // console.log("*************");
+            // console.log("*************");
+            // await xenft.approve(DBXENFT.address, 3001);
+            // await DBXENFT.burnNFT(3001);
+            // console.log("*************");
+            // console.log("*************");
+            // await xenft.approve(DBXENFT.address, 1001);
+            // await DBXENFT.burnNFT(1001);
+            // console.log("*************");
+            // console.log("*************");
+            // await xenft.approve(DBXENFT.address, 1002);
+            // await DBXENFT.burnNFT(1002);
+            // console.log("*************");
+            // console.log("*************");
+            // await xenft.approve(DBXENFT.address, 101);
+            // await DBXENFT.burnNFT(101);
+            // console.log("*************");
+            // console.log("*************");
+            // await xenft.approve(DBXENFT.address, 1);
+            // await DBXENFT.burnNFT(1);
+
     });
 
 });
