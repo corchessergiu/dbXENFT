@@ -419,7 +419,7 @@ describe.only("Test burn functionality", async function() {
     });
 
 
-    it.only("General test", async() => {
+    it("General test", async() => {
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await XENContract.connect(alice).approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
@@ -487,5 +487,84 @@ describe.only("Test burn functionality", async function() {
         await DBXENFTLocal.connect(alice).burnNFT(10006, { value: ethers.utils.parseEther("0.001") });
         console.log("&&&&&&&&&&&&&&&&&&&&&&&&&---10006---&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
     });
+
+    it.only("Stake unstak functionality", async() => {
+        await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
+        await XENContract.connect(alice).approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
+        await xenft.bulkClaimRank(128, 1);
+        await xenft.bulkClaimRank(128, 1);
+        await xenft.bulkClaimRank(128, 1);
+        await xenft.bulkClaimRank(128, 1);
+        await xenft.connect(alice).bulkClaimRank(128, 1);
+        await xenft.connect(alice).bulkClaimRank(128, 1);
+        await xenft.bulkClaimRankLimited(100, 1, ethers.utils.parseEther("250000000"));
+        await xenft.bulkClaimRankLimited(100, 1, ethers.utils.parseEther("500000000"));
+        await xenft.bulkClaimRankLimited(100, 1, ethers.utils.parseEther("1000000000"));
+        await xenft.bulkClaimRankLimited(100, 1, ethers.utils.parseEther("2000000000"));
+        await xenft.bulkClaimRankLimited(100, 1, ethers.utils.parseEther("2500000000"));
+        await xenft.bulkClaimRankLimited(100, 1, ethers.utils.parseEther("5000000000"));
+        await xenft.bulkClaimRankLimited(100, 1, ethers.utils.parseEther("10000000000"));
+
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
+        await hre.ethers.provider.send("evm_mine")
+
+        const MintInfo = await ethers.getContractFactory("MintInfo", deployer)
+        const mintinfo = await MintInfo.deploy()
+        await mintinfo.deployed()
+
+        const dbXENFTLocal = await ethers.getContractFactory("dbXENFT", {
+            libraries: {
+                MintInfo: mintinfo.address
+            }
+        });
+
+        DBXENFTLocal = await dbXENFTLocal.deploy(DBX.address, xenft.address, XENContract.address, ethers.constants.AddressZero, ethers.constants.AddressZero);
+        await DBXENFTLocal.deployed();
+
+        console.log("&&&&&&&&&&&&&&&&&&&&&&&&&---10001---&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+        await xenft.approve(DBXENFTLocal.address, 10001);
+        await DBXENFTLocal.burnNFT(10001, { value: ethers.utils.parseEther("0.001") });
+        console.log("&&&&&&&&&&&&&&&&&&&&&&&&&---10001---&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+
+        console.log("before stake");
+        await DBX.approve(DBXENFTLocal.address, ethers.utils.parseEther("30000000000"))
+        await DBXENFTLocal.stake(ethers.utils.parseEther("30"));
+        console.log("after stake");
+
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
+        await hre.ethers.provider.send("evm_mine")
+
+        console.log("&&&&&&&&&&&&&&&&&&&&&&&&&---10002---&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+
+        await xenft.approve(DBXENFTLocal.address, 10002);
+        await DBXENFTLocal.burnNFT(10002, { value: ethers.utils.parseEther("0.001") });
+        console.log("&&&&&&&&&&&&&&&&&&&&&&&&&---10002---&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
+        await hre.ethers.provider.send("evm_mine")
+
+        console.log("&&&&&&&&&&&&&&&&&&&&&&&&&---10003---&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+        await xenft.approve(DBXENFTLocal.address, 10003);
+        await DBXENFTLocal.burnNFT(10003, { value: ethers.utils.parseEther("0.001") });
+        console.log("&&&&&&&&&&&&&&&&&&&&&&&&&---10003---&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 3 * 24])
+        await hre.ethers.provider.send("evm_mine")
+
+        console.log("&&&&&&&&&&&&&&&&&&&&&&&&&---10006---&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+        await xenft.connect(alice).approve(DBXENFTLocal.address, 10006);
+        await DBXENFTLocal.connect(alice).burnNFT(10006, { value: ethers.utils.parseEther("0.001") });
+        console.log("&&&&&&&&&&&&&&&&&&&&&&&&&---10006---&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 3 * 24])
+        await hre.ethers.provider.send("evm_mine")
+
+        console.log("&&&&&&&&&&&&&&&&&&&&&&&&&---10005---&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+        await xenft.connect(alice).approve(DBXENFTLocal.address, 10005);
+        await DBXENFTLocal.connect(alice).burnNFT(10005, { value: ethers.utils.parseEther("0.001") });
+        console.log("&&&&&&&&&&&&&&&&&&&&&&&&&---10005---&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+
+    });
+
 
 });
