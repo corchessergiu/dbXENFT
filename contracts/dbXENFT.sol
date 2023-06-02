@@ -134,6 +134,8 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         (uint256 term, uint256 maturityTs, , , , , , , bool redeemed) = mintInfo.decodeMintInfo();
         uint256 userReward = _calculateUserMintReward(tokenId, mintInfo);
         uint256 fee = _calculateFee(userReward, xenft.xenBurned(tokenId), maturityTs, term);
+        //total power fix si dam xenul procentaj din total power, scade la inceput de ciclu cu 1% si dupa se adauga inca 100
+        //1% decrease pe zi 
         require(msg.value >= fee, "dbXENFT: value less than protocol fee");
         console.log("**********After functions updates********");
         console.log("USER REWARD ->>>>>>>>>>>>>>>>>>>>>>>> ",userReward);
