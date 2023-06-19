@@ -85,6 +85,8 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
 
     uint256 public totalPower;
 
+    uint256 public pendingExtraPower;
+
     //mapping(uint256 => bool) public alreadyUpdateGlobalPower;
 
     mapping(address => mapping(uint256 => bool)) public alreadyUpdateUserPower;
@@ -130,13 +132,27 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
 
     mapping(uint256 => uint256) public totalGlobalPower;
 
+    mapping(uint256 => uint256) public totalExtraEntryPower;
+
     mapping(uint256 => uint256) public tokenEntryPower;
+
+    mapping(uint256 => uint256) public dxnExtraEntryPower;
+
+    mapping(uint256 => uint256) public tokenEntryPowerWithStake;
+
+    mapping(uint256 => uint256) public dbXeNFTPower;
 
     mapping(uint256 => uint256) public summedCycleStakes;
 
     mapping(uint256 => uint256) public cycleFeesPerStakeSummed;
 
     mapping(uint256 => uint256) public rewardPerCycle;
+
+    mapping(uint256 => uint256) public tokenFirstStake;
+
+    mapping(uint256 => uint256) public tokenSecondStake;
+
+    mapping(uint256 => mapping(uint256 => uint256)) tokenStakeCycle;
 
     event NewCycleStarted(
         uint256 indexed cycle,
@@ -411,20 +427,55 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         console.log(" userUncalimedFees[user] ", userUncalimedFees[user]);
     }
 
+    function calcStakeFee(uint256 dxnAmount) internal returns(uint256 stakeFee){
+
+    }
+
+    function calcExtraPower(uint256 power, uint256 dxnAmount) internal pure returns(uint256 calcPower){
+        calcPower = power * dxnAmount / 1e21;
+    }
+
     //punem un anumit numar pe fiecare xen sau cum se trateaa aici?
-    function stake(uint256 amount) external nonReentrant {
-        uint256 currentCycle = getCurrentCycle();
-        updateWithdrawableStakeAmount(msg.sender, currentCycle);
+    function stake(uint256 amount, uint256 tokenId) external payable nonReentrant {
+        calculateCycle();
+        updateCycleFeesPerStakeSummed();
         updateTotalPower(currentCycle, msg.sender);
         require(amount > 0, "DBXen: amount is zero");
-        userLastCycleStake[msg.sender] = currentCycle;
-        userStakedAmount[msg.sender] = userStakedAmount[msg.sender] + amount;
-        userCycleStake[currentCycle][msg.sender] =
-            userCycleStake[currentCycle][msg.sender] +
-            amount;
-        uint256 extraAmountOfPower = amount * extraPowerValue;
-        userPowerPerCycle[msg.sender][currentCycle] += extraAmountOfPower;
-        totalPowerPerCycle[currentCycle] += extraAmountOfPower;
+        require(tokenEntryPower[tokenId] != 0, "DBXeNFT does not exist");
+        uint256 stakeFee = calcStakeFee(amount);
+        require(mgs.value >= stakeFee, "Value less than staking fee");
+        // userLastCycleStake[msg.sender] = currentCycle;
+        // userStakedAmount[msg.sender] = userStakedAmount[msg.sender] + amount;
+        // userCycleStake[currentCycle][msg.sender] =
+        //     userCycleStake[currentCycle][msg.sender] +
+        //     amount;
+        // uint256 extraAmountOfPower = amount * extraPowerValue;
+        // userPowerPerCycle[msg.sender][currentCycle] += extraAmountOfPower;
+        // totalPowerPerCycle[currentCycle] += extraAmountOfPower;
+        uint256 cycleToSet = currentCycle + 1;
+
+        if (lastStartedCycle == currentStartedCycle) {
+            cycleToSet = currentCycle;
+        }
+
+        if (
+            (cycleToSet != tokenFirstStake[tokenId] &&
+                cycleToSet != tokenSecondStake[tokenId])
+        ) {
+            if (tokenFirstStake[tokenId] == 0) {
+                tokenFirstStake[tokenId] = cycleToSet;
+            } else if (tokenSecondStake[tokenId] == 0) {
+                tokenSecondStake[tokenId] = cycleToSet;
+            }
+        }
+
+        tokenStakeCycle[tokenId][cycleToSet] += amount;
+
+        uint256 extraPower = calcExtraPower(amount, tokenEntryPower[tokenId]);
+        dxnExtraEntryPower[tokenId] += extraPower;
+        tokenEntryPowerWithStake[currentCycle] += tokenEntryPower[tokenId];
+        totalExtraEntryPower[currentCycle] += extraPower;
+
         dxn.safeTransferFrom(msg.sender, address(this), amount);
     }
 
@@ -624,6 +675,18 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
             lastCycleReward = currentCycleReward;
             uint256 calculatedCycleReward = lastCycleReward +
                 (lastCycleReward / 100);
+
+            if(pendingExtraPower != 0) {
+                calculatedCycleReward += pendingExtraPower;
+            }
+
+            if(tokenEntryPowerWithStake[lastStartedCycle] != 0) {
+                uint256 powerForEntryWithStake = tokenEntryPowerWithStake[lastStartedCycle]
+                    * lastCycleReward / totalPowerPerCycle[lastStartedCycle];
+                pendingExtraPower = dxnExtraEntryPower[lastStartedCycle] * powerForEntryWithStake
+                    / tokenEntryPowerWithStake[lastStartedCycle];
+            }   
+            
             currentCycleReward = calculatedCycleReward;
             rewardPerCycle[currentCycle] = calculatedCycleReward;
 
@@ -632,11 +695,6 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
             summedCycleStakes[currentStartedCycle] +=
                 summedCycleStakes[lastStartedCycle] +
                 currentCycleReward;
-
-            if (pendingStake != 0) {
-                summedCycleStakes[currentStartedCycle] += pendingStake;
-                pendingStake = 0;
-            }
 
             if (pendingStakeWithdrawal != 0) {
                 summedCycleStakes[
