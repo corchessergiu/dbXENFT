@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
@@ -30,13 +29,6 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
 
     DBXENFT public immutable DBXENFTInstance;
 
-    /**
-     * Power for the previous cycle.
-     */
-    uint256 public lastCyclePower;
-
-    uint256 public lastGlobalActiveCycle;
-
     uint256 public currentCycle;
 
     uint256 public previousStartedCycle;
@@ -51,10 +43,6 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
 
     uint256 public constant SECONDS_IN_DAY = 3_600 * 24;
 
-    uint256 public constant SECONDS_IN_YEAR = 3_600 * 24 * 365;
-
-    uint256 public immutable newImagePeriodDuration;
-
     uint256 public constant MAX_PENALTY_PCT = 99;
 
     /**
@@ -64,23 +52,13 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
 
     uint256 public constant BASE_XEN = 1_000_000_000;
 
-    uint256 private constant FIXED_POINT_DECIMALS = 18;
-
-    uint256 private constant FIXED_POINT_FACTOR = 10 ** FIXED_POINT_DECIMALS;
-
     uint256 public constant SCALING_FACTOR = 1e40;
-
-    address WETH;
-
-    address WETH_XEN_POOL;
 
     /**
      * Length of a fee distribution cycle.
      * Initialized in contstructor to 1 day.
      */
     uint256 public immutable i_periodDuration;
-
-    uint256 public extraPowerValue;
 
     /**
      * Contract creation timestamp.
@@ -92,46 +70,12 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
 
     uint256 public pendingExtraPower;
 
-    mapping(address => mapping(uint256 => bool)) public alreadyUpdateUserPower;
-
-    /**
-     * The last cycle in which an tokenId has burned.
-     */
-    mapping(address => uint256) public lastActiveCycle;
-
     /**
      * The total amount of accrued fees per cycle.
      */
     mapping(uint256 => uint256) public cycleAccruedFees;
 
-    mapping(address => uint256) public userStakedAmount;
-
-    mapping(uint256 => mapping(address => uint256)) public userCycleStake;
-
-    mapping(address => uint256) public userPreviousStake;
-
-    mapping(address => uint256) public userWithdrawableStake;
-
-    mapping(address => uint256) public userLastCycleStake;
-
-    mapping(address => uint256) public userLastCycleUnstake;
-
-    mapping(uint256 => uint256) public dbxenftEntryPower;
-
-    mapping(address => mapping(uint256 => uint256)) userPowerPerCycle;
-
     mapping(uint256 => uint256) public totalPowerPerCycle;
-
-    mapping(address => uint256) public userUncalimedFees;
-
-    mapping(uint256 => bool) public alreadyUpdateTotalPower;
-
-    mapping(address => mapping(uint256 => bool)) public alreadyFeesUpdated;
-
-    mapping(address => mapping(uint256 => uint256))
-        public userTotalPowerPerCycle;
-
-    mapping(uint256 => bool) public alreadyUpdateUserPowerPerCycle;
 
     mapping(uint256 => uint256) public totalGlobalPower;
 
@@ -181,46 +125,6 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         uint256 summedCycleStakes
     );
 
-    modifier updateStats(uint256 tokenId, address user) {
-        uint256 currentCycle = getCurrentCycle();
-        console.log("USER ", user);
-        console.log(
-            "###############################Ciclul curent#################################",
-            currentCycle
-        );
-        updateWithdrawableStakeAmount(user, currentCycle);
-        updateTotalPower(currentCycle, user);
-        uint256 mintInfo = xenft.mintInfo(tokenId);
-        (uint256 term, uint256 maturityTs, , , , , , , bool redeemed) = mintInfo
-            .decodeMintInfo();
-        uint256 userReward = _calculateUserMintReward(tokenId, mintInfo);
-        uint256 fee = _calculateFee(
-            userReward,
-            xenft.xenBurned(tokenId),
-            maturityTs,
-            term
-        );
-        uint256 power = userReward;
-        //userPowerPerCycle[user][currentCycle] = userPowerPerCycle[user][currentCycle] + power;
-        cycleAccruedFees[currentCycle] = cycleAccruedFees[currentCycle] + fee;
-        totalPowerPerCycle[currentCycle] += power;
-        console.log("After updates");
-        //console.log("Total power ",totalPower);
-        console.log(
-            "userPowerPerCycle[user][currentCycle] ",
-            userPowerPerCycle[user][currentCycle]
-        );
-        console.log(
-            "totalPowerPerCycle[currentCycle] ",
-            totalPowerPerCycle[currentCycle]
-        );
-        console.log(
-            "cycleAccruedFees[currentCycle] ",
-            cycleAccruedFees[currentCycle]
-        );
-        _;
-    }
-
     modifier onlyNFTOwner(
         ERC721 tokenAddress,
         tokenId,
@@ -233,19 +137,6 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         _;
     }
 
-    // IBurnRedeemable IMPLEMENTATION
-    /**
-        @dev implements IBurnRedeemable interface for burning XEN and completing update for state
-     */
-    function onTokenBurned(address user, uint256 amount) external {
-        require(
-            msg.sender == address(xenft),
-            "dbXENFT: illegal callback caller"
-        );
-        uint256 currentCycle = getCurrentCycle();
-        lastGlobalActiveCycle = currentCycle;
-        lastActiveCycle[user] = currentCycle;
-    }
 
     /**
      * @param xenftAddress XENFT contract address.
@@ -260,12 +151,8 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         dxn = DBXenERC20(dbxAddress);
         xenft = XENTorrent(xenftAddress);
         xenCrypto = _xenCrypto;
-        WETH = _WETH;
-        WETH_XEN_POOL = _WETH_XEN_POOL;
-        newImagePeriodDuration = SECONDS_IN_YEAR;
         i_periodDuration = 1 days;
         i_initialTimestamp = block.timestamp;
-        extraPowerValue = 1_000_000;
         totalGlobalPower[0] = 10_000;
         DBXENFTInstance = new DBXENFT();
         currentCycleReward = 10000 * 1e18;
@@ -308,147 +195,6 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         xenft.transferFrom(msg.sender, address(this), tokenId);
     }
 
-    function updateWithdrawableStakeAmount(
-        address user,
-        uint256 currentCycle
-    ) internal {
-        console.log(
-            "*****************UPDATE updateWithdrawableStakeAmount STAKE*****************"
-        );
-        uint256 lastStakeCycle = userLastCycleStake[user];
-        console.log("lastStakeCycle ", lastStakeCycle);
-        console.log(
-            "userCycleStake[lastStakeCycle][user] ",
-            userCycleStake[lastStakeCycle][user]
-        );
-        console.log("userLastCycleStake[user] ", userLastCycleStake[user]);
-        console.log(
-            " userWithdrawableStake[user] ",
-            userWithdrawableStake[user]
-        );
-        if (
-            userCycleStake[lastStakeCycle][user] != 0 &&
-            userLastCycleStake[user] != currentCycle
-        ) {
-            userWithdrawableStake[user] =
-                userWithdrawableStake[user] +
-                userCycleStake[lastStakeCycle][user];
-            userCycleStake[lastStakeCycle][user] = 0;
-            userLastCycleStake[user] = 0;
-        }
-        console.log("AFTER ");
-        console.log(
-            " userWithdrawableStake[user] ",
-            userWithdrawableStake[user]
-        );
-        console.log(
-            "userCycleStake[lastStakeCycle][user] ",
-            userCycleStake[lastStakeCycle][user]
-        );
-        console.log("userLastCycleStake[user] ", userLastCycleStake[user]);
-        console.log(
-            "****************FINISH PE withdrawable*******************"
-        );
-    }
-
-    function updatePowerForUser(address user, uint256 cycle) internal {
-        uint256 userLastActiveCycle = lastActiveCycle[user];
-        uint256 numberOfInactiveCycles = cycle - userLastActiveCycle;
-        uint256 intermediateCycle = userLastActiveCycle;
-
-        for (uint256 index = 0; index < numberOfInactiveCycles; index++) {
-            if (alreadyUpdateUserPower[user][intermediateCycle] == false) {
-                alreadyUpdateUserPower[user][intermediateCycle] = true;
-                userTotalPowerPerCycle[user][intermediateCycle] =
-                    (userPowerPerCycle[user][intermediateCycle] *
-                        totalGlobalPower[intermediateCycle]) /
-                    totalPowerPerCycle[intermediateCycle];
-            }
-        }
-    }
-
-    function updateTotalPower(uint256 cycle, address user) internal {
-        console.log(
-            "***************updateTotalPower function******************"
-        );
-        console.log("cycle ", cycle);
-        console.log("Power before div ", totalPower);
-        uint256 intermediateCycle = lastGlobalActiveCycle;
-        console.log("lastGlobalActiveCycle ", intermediateCycle);
-        uint256 localPower;
-        if (cycle > 0 && intermediateCycle != 0) {
-            uint256 numberOfInactiveCycles = cycle - lastGlobalActiveCycle;
-            for (uint256 index = 0; index < numberOfInactiveCycles; index++) {
-                console.log(
-                    "alreadyUpdateTotalPower[intermediateCycle] ",
-                    alreadyUpdateTotalPower[intermediateCycle]
-                );
-                console.log("intermediateCycle ", intermediateCycle);
-                if (alreadyUpdateTotalPower[intermediateCycle] == false) {
-                    alreadyUpdateTotalPower[intermediateCycle] = true;
-                    console.log(
-                        "totalPowerPerCycle[intermediateCycle - 1] ",
-                        totalPowerPerCycle[intermediateCycle - 1]
-                    );
-                    localPower =
-                        (totalPowerPerCycle[intermediateCycle - 1] * 10000) /
-                        1000000;
-                    console.log("Total now after div ", localPower);
-                    totalGlobalPower[intermediateCycle] = localPower;
-                    console.log(
-                        " totalGlobalPower[intermediateCycle] ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ",
-                        intermediateCycle
-                    );
-                    intermediateCycle += 1;
-                }
-            }
-        }
-        updatePowerForUser(user, cycle);
-        console.log("CALL CATRE UPDATE USER POWER ->>>>>>>>>>>>>>>>>>>");
-    }
-
-    function calculateExtraPower(
-        uint256 amountOfDXNStaked,
-        address user,
-        uint256 cycle
-    ) internal {
-        console.log("Intru pe extra power ");
-        uint256 extraAmountOfPower = amountOfDXNStaked * extraPowerValue;
-        userPowerPerCycle[user][cycle] += extraAmountOfPower;
-    }
-
-    function updateFees(address user, uint256 cycle) internal {
-        console.log("UPDATE FEE FUNCTION");
-        console.log("cyclu ", cycle);
-        console.log(
-            "alreadyFeesUpdated[user][cycle] ",
-            alreadyFeesUpdated[user][cycle]
-        );
-        console.log("cycleAccruedFees[cycle] ", cycleAccruedFees[cycle]);
-        console.log(
-            " userPowerPerCycle[user][cycle] ",
-            user,
-            " ",
-            userPowerPerCycle[user][cycle]
-        );
-        console.log(" totalPowerPerCycle[cycle] ", totalPowerPerCycle[cycle]);
-        console.log("Acumulat pana acum ", userUncalimedFees[user]);
-        if (
-            alreadyFeesUpdated[user][cycle] == false &&
-            cycleAccruedFees[cycle] != 0
-        ) {
-            if (totalPowerPerCycle[cycle] != 0) {
-                userUncalimedFees[user] =
-                    userUncalimedFees[user] +
-                    ((userPowerPerCycle[user][cycle] *
-                        cycleAccruedFees[cycle]) / totalPowerPerCycle[cycle]);
-            }
-            alreadyFeesUpdated[user][cycle] = true;
-        }
-        console.log("USERUL CU ADRESA ", user, " are de luat:");
-        console.log(" userUncalimedFees[user] ", userUncalimedFees[user]);
-    }
-
     function calcStakeFee(uint256 dxnAmount) internal returns(uint256 stakeFee){
         stakeFee = dxnAmount / 1000;
     }
@@ -466,14 +212,6 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         require(tokenEntryPower[tokenId] != 0, "DBXeNFT does not exist");
         uint256 stakeFee = calcStakeFee(amount);
         require(msg.value >= stakeFee, "Value less than staking fee");
-        // userLastCycleStake[msg.sender] = currentCycle;
-        // userStakedAmount[msg.sender] = userStakedAmount[msg.sender] + amount;
-        // userCycleStake[currentCycle][msg.sender] =
-        //     userCycleStake[currentCycle][msg.sender] +
-        //     amount;
-        // uint256 extraAmountOfPower = amount * extraPowerValue;
-        // userPowerPerCycle[msg.sender][currentCycle] += extraAmountOfPower;
-        // totalPowerPerCycle[currentCycle] += extraAmountOfPower;
         uint256 cycleToSet = currentCycle + 1;
 
         if (lastStartedCycle == currentStartedCycle) {
@@ -521,7 +259,7 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         tokenWithdrawableStake[tokenId] -= amount;
         DBXeNFTPower[tokenId] -= powerDecrease;
 
-        dxn.safeTransfer(msg.sender, userWithdrawableStake[msg.sender]);
+        dxn.safeTransfer(msg.sender, tokenWithdrawableStake[msg.sender]);
     }
 
     function claimFees(uint256 tokenId) external nonReentrant() onlyNFTOwner(DBXENFTInstance, tokenId, msg.sender){
