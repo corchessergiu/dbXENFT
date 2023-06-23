@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./interfaces/IXENCrypto.sol";
 import "./libs/MintInfo.sol";
 import "./XENFT.sol";
@@ -61,6 +62,8 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
      */
     uint256 public constant MAX_BPS = 10_000_000;
 
+    uint256 public constant BASE_XEN = 1_000_000_000;
+
     uint256 private constant FIXED_POINT_DECIMALS = 18;
 
     uint256 private constant FIXED_POINT_FACTOR = 10 ** FIXED_POINT_DECIMALS;
@@ -88,8 +91,6 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
     uint256 public totalPower;
 
     uint256 public pendingExtraPower;
-
-    //mapping(uint256 => bool) public alreadyUpdateGlobalPower;
 
     mapping(address => mapping(uint256 => bool)) public alreadyUpdateUserPower;
 
@@ -169,6 +170,8 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
     mapping(uint256 => uint256) public lastFeeUpdateCycle;
 
     mapping(address => uint256) public tokenWithdrawableStake;
+
+    mapping(uint256 => uint256) public tokenUnderlyingXENFT;
 
     uint256 public pendingStakeWithdrawal;
 
@@ -290,7 +293,6 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
 
         uint256 fee = _calculateFee(
             estimatedReward,
-            xenft.xenBurned(tokenId),
             maturityTs,
             term
         );
@@ -301,6 +303,7 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         tokenEntryCycle[dbxenftId] = currentCycle;
         cycleAccruedFees[currentCycle] = cycleAccruedFees[currentCycle] + fee;
         totalPowerPerCycle[currentCycle] += estimatedReward;
+        tokenUnderlyingXENFT[dbxenftId] = tokenId;
 
         xenft.transferFrom(msg.sender, address(this), tokenId);
     }
@@ -455,7 +458,7 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
     }
 
     //punem un anumit numar pe fiecare xen sau cum se trateaa aici?
-    function stake(uint256 amount, uint256 tokenId) external payable nonReentrant onlyNFTOwner(xenft, tokenId, msg.sender) {
+    function stake(uint256 amount, uint256 tokenId) external payable nonReentrant onlyNFTOwner(DBXENFTInstance, tokenId, msg.sender) {
         calculateCycle();
         updateCycleFeesPerStakeSummed();
         updateTotalPower(currentCycle, msg.sender);
@@ -499,7 +502,7 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         dxn.safeTransferFrom(msg.sender, address(this), amount);
     }
 
-    function unstake(uint256 tokenId, uint256 amount) external nonReentrant onlyNFTOwner(xenft, tokenId, msg.sender) {
+    function unstake(uint256 tokenId, uint256 amount) external nonReentrant onlyNFTOwner(DBXENFTInstance, tokenId, msg.sender) {
         calculateCycle();
         updateCycleFeesPerStakeSummed();
         updateDBXeNFT(tokenId);
@@ -521,93 +524,72 @@ contract dbXENFT is ReentrancyGuard, IBurnRedeemable {
         dxn.safeTransfer(msg.sender, userWithdrawableStake[msg.sender]);
     }
 
-    function claimFees(uint256 tokenId) external nonReentrant() onlyNFTOwner(xenft, tokenId, msg.sender){
+    function claimFees(uint256 tokenId) external nonReentrant() onlyNFTOwner(DBXENFTInstance, tokenId, msg.sender){
         calculateCycle();
         updateCycleFeesPerStakeSummed();
         updateDBXeNFT(tokenId);
-        uint256 fees = userUncalimedFees[msg.sender];
+        uint256 fees = tokenAccruedFees[tokenId];
         require(fees > 0, "dbXENFT: amount is zero");
-        userUncalimedFees[msg.sender] = 0;
+        tokenAccruedFees[msg.sender] = 0;
         sendViaCall(payable(msg.sender), fees);
     }
 
-    function _calculateFee(
-        uint256 userReward,
-        uint256 xenBurned,
-        uint256 maturityTs,
-        uint256 term
-    ) private returns (uint256) {
-        uint256 xenDifference;
+    function calcMaturityDays(uint256 term, uint256 maturityTs) internal returns(uint256 maturityDays) {
         uint256 daysTillClaim;
         uint256 daysSinceMinted;
-        uint256 daysDifference;
 
-        if (userReward > xenBurned) {
-            xenDifference = userReward - xenBurned;
-        } else {
-            if (xenBurned == 0 && userReward == 0)
-                return (1 * FIXED_POINT_FACTOR) / 10;
-            if (xenBurned == 250_000_000 * FIXED_POINT_FACTOR)
-                return (22 * FIXED_POINT_FACTOR) / 10;
-            if (xenBurned == 500_000_000 * FIXED_POINT_FACTOR) return 2 ether;
-            if (xenBurned == 1_000_000_000 * FIXED_POINT_FACTOR)
-                return (18 * FIXED_POINT_FACTOR) / 10;
-            if (xenBurned == 2_000_000_000 * FIXED_POINT_FACTOR)
-                return (16 * FIXED_POINT_FACTOR) / 10;
-            if (xenBurned == 2_500_000_000 * FIXED_POINT_FACTOR)
-                return (14 * FIXED_POINT_FACTOR) / 10;
-            if (xenBurned == 5_000_000_000 * FIXED_POINT_FACTOR)
-                return (12 * FIXED_POINT_FACTOR) / 10;
-            if (xenBurned == 10_000_000_000 * FIXED_POINT_FACTOR)
-                return 1 ether;
-        }
-
-        if (block.timestamp < maturityTs) {
+        if(block.timestamp < maturityTs) {
             daysTillClaim = ((maturityTs - block.timestamp) / SECONDS_IN_DAY);
             daysSinceMinted = term - daysTillClaim;
         } else {
             daysTillClaim = 0;
-            //console.log("TERM ",term);
             daysSinceMinted =
                 ((term * SECONDS_IN_DAY + (block.timestamp - maturityTs))) /
                 SECONDS_IN_DAY;
-            //console.log("ZILE DE LA MINT", daysSinceMinted);
         }
-
-        //console.log("daysTillClaim ",daysTillClaim);
-        //console.log("daysSinceMinted ",daysSinceMinted);
 
         if (daysSinceMinted > daysTillClaim) {
-            daysDifference = daysSinceMinted - daysTillClaim;
+            maturityDays = daysSinceMinted - daysTillClaim;
         }
-        //console.log("daysDifference ",daysDifference);
-        uint256 firstMaxValue = daysDifference > 0 ? daysDifference : 0;
-        //console.log("maxValue first ",firstMaxValue);
-        uint256 maxResult;
-        uint256 xenDifXmaxResult;
-        if (firstMaxValue != 0) {
-            uint256 procentageValue = ((10_000_000 - (11389 * firstMaxValue)) *
-                FIXED_POINT_FACTOR) / MAX_BPS;
-            //console.log("PROCENTAJ ->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ",procentageValue);
-            maxResult = procentageValue > 0.5 ether
-                ? procentageValue
-                : 0.5 ether;
-            //console.log("max result " ,maxResult);
-            xenDifXmaxResult =
-                ((xenDifference * maxResult) / FIXED_POINT_FACTOR) /
-                (1_000_000_000 * FIXED_POINT_FACTOR);
-            //console.log("xenDifXmaxResult ",xenDifXmaxResult);
-            //console.log(xenDifXmaxResult > 0.001 ether ? xenDifXmaxResult : 0.001 ether);
-            return
-                xenDifXmaxResult > 0.001 ether ? xenDifXmaxResult : 0.001 ether;
-        } else {
-            //console.log((xenDifference/(1_000_000_000*FIXED_POINT_FACTOR)) > 0.001 ether ? xenDifference/(1_000_000_000*FIXED_POINT_FACTOR) : 0.001 ether);
-            return
-                (xenDifference / (1_000_000_000 * FIXED_POINT_FACTOR)) >
-                    0.001 ether
-                    ? xenDifference / (1_000_000_000 * FIXED_POINT_FACTOR)
-                    : 0.001 ether;
+    }
+
+    function claimXen(uint256 tokenId) external onlyNFTOwner(DBXENFTInstance, tokenId, msg.sender) {
+        calculateCycle();
+        updateCycleFeesPerStakeSummed();
+        updateDBXeNFT(tokenId);
+
+        uint256 xenftId = tokenUnderlyingXENFT[tokenId];
+        uint256 mintInfo = xenft.mintInfo(xenftId);
+
+        require(!mintInfo.getRedeemed(), "XENFT: Already redeemed");
+
+        uint256 DBXenftPow = DBXeNFTPower[tokenId];
+        if(DBXenftPow > 1e18) {
+            uint256 newPow = Math.mulDiv(DBXeNFTPower[tokenId], 1e18, baseDBXeNFTPower[tokenId]);
+            DBXeNFTPower[tokenId] = newPow;
+            DBXenftPow -= newPow;
+            baseDBXeNFTPower[tokenId] = 1e18;
+
+            if (lastStartedCycle == currentStartedCycle) {
+            pendingStakeWithdrawal += DBXenftPow;
+            } else {
+                summedCycleStakes[currentCycle] -= DBXenftPow;
+            }
         }
+
+        xenft.bulkClaimMintReward(xenftId, msg.sender);
+    }
+
+    function _calculateFee(
+        uint256 userReward,
+        uint256 maturityTs,
+        uint256 term
+    ) private returns (uint256 burnFee) {
+        uint256 maturityDays = calcMaturityDays(term, maturityTs);
+        uint256 maxDays = Math.max(maturityDays, 0);
+        uint256 maxPctReduction = Math.min(11389 * maxDays, 5_000_000);
+        uint256 xenMulReduction = Math.mulDiv(estXenReward, maxPctReduction, MAX_BPS);
+        burnFee = Math.max(1e15, xenMulReduction / BASE_XEN);
     }
 
     function _penalty(uint256 secsLate) private pure returns (uint256) {
