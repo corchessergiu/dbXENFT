@@ -23,7 +23,7 @@ contract DBXenERC20 is ERC20Permit {
     constructor() ERC20("DBXen Token on Polygon", "mDXN")
     ERC20Permit("DBXen Token on Polygon") {
         owner = msg.sender;
-        _mint(msg.sender,501 ether);
+        _mint(msg.sender,5010000 ether);
     }
 
     /**
