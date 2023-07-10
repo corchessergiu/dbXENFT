@@ -329,6 +329,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
         updateCycleFeesPerStakeSummed();
         updateDBXeNFT(tokenId);
         uint256 fees = tokenAccruedFees[tokenId];
+        console.log("am fee ",fees);
         require(fees > 0, "dbXENFT: amount is zero");
         tokenAccruedFees[tokenId] = 0;
         sendViaCall(payable(msg.sender), fees);
@@ -547,7 +548,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
             currentCycle > lastStartedCycleMem &&
             lastFeeUpdateCycle[tokenId] != lastStartedCycleMem + 1
         ) {
-            
+            console.log("intr aici ",tokenId);
             tokenAccruedFees[tokenId] += (DBXeNFTPower[tokenId] 
                     * (cycleFeesPerStakeSummed[lastStartedCycleMem + 1] - cycleFeesPerStakeSummed[lastFeeUpdateCycle[tokenId]])) / SCALING_FACTOR;
 

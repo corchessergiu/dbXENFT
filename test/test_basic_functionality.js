@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { BigNumber } = require("ethers");
 const { ethers } = require("hardhat");
 
-describe("Test fee claiming functionality", async function() {
+describe("Test basic functionality", async function() {
     let xenft, dbXeNFTFactory, XENContract, DBX, DBXeNFT;
     let alice, bob, carol, dean;
     let dbXeNFTFactoryAlice, dbXeNFTFactoryBob, dbXeNFTFactoryCarol, dbXeNFTFactoryDean
@@ -104,158 +104,108 @@ describe("Test fee claiming functionality", async function() {
 
     });
 
-    it("Basic fee claiming for entry cycle", async function() {
-        await xenft.bulkClaimRank(128, 1)
+    it("Cycle reward test", async function() {
+        let contractBalanceBeforeBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
+        expect(contractBalanceBeforeBurn).to.equal("0");
+        await xenft.bulkClaimRank(128, 71)
         await xenft.approve(dbXeNFTFactory.address, 10001)
         await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        let contractBalanceAfterBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
+        expect(contractBalanceAfterBurn).to.be.greaterThan("0");
+        let cycle0Reward = await dbXeNFTFactory.rewardPerCycle(0);
+        expect(cycle0Reward).to.equal(ethers.utils.parseEther("10000"));
 
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
+        await hre.ethers.provider.send("evm_mine")
 
         await xenftAlice.bulkClaimRank(64, 7)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
         await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
 
+        let cycle1Reward = await dbXeNFTFactory.rewardPerCycle(1);
+        expect(cycle1Reward).to.equal(ethers.utils.parseEther("10100"));
+
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
+        await hre.ethers.provider.send("evm_mine")
 
         await xenftBob.bulkClaimRank(100, 100)
         await xenftBob.approve(dbXeNFTFactory.address, 10003)
         await dbXeNFTFactoryBob.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+
+        let cycle2Reward = await dbXeNFTFactory.rewardPerCycle(2);
+        expect(cycle2Reward).to.equal(ethers.utils.parseEther("10201"));
+
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
+        await hre.ethers.provider.send("evm_mine")
 
         await xenftCarol.bulkClaimRank(32, 100)
         await xenftCarol.approve(dbXeNFTFactory.address, 10004)
         await dbXeNFTFactoryCarol.burnNFT(10004, { value: ethers.utils.parseEther("1") })
 
+        let cycle3Reward = await dbXeNFTFactory.rewardPerCycle(3);
+        expect(cycle3Reward).to.equal(ethers.utils.parseEther("10303.01"));
+
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
-        const firstCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(0)
-        const firstCycleAccruedFees = await dbXeNFTFactory.cycleAccruedFees(0)
+        await xenftCarol.bulkClaimRank(77, 100)
+        await xenftCarol.approve(dbXeNFTFactory.address, 10005)
+        await dbXeNFTFactoryCarol.burnNFT(10005, { value: ethers.utils.parseEther("1") })
 
-        const deployerTx = await dbXeNFTFactory.claimFees(0)
-        const deployerReceipt = await deployerTx.wait()
-        const deployerFeesClaimedEvent = deployerReceipt.events.find(function(el) {
-            return el.event == "FeesClaimed"
-        })
-        const deployerFeesClaimed = deployerFeesClaimedEvent.args.fees
-        const deployerBasePow = await dbXeNFTFactory.baseDBXeNFTPower(0)
-        expect(deployerFeesClaimed).to.equal(deployerBasePow.mul(firstCycleAccruedFees).div(firstCycleRewardPow))
-
-        const aliceTx = await dbXeNFTFactoryAlice.claimFees(1)
-        const aliceReceipt = await aliceTx.wait()
-        const aliceFeesClaimedEvent = aliceReceipt.events.find(function(el) {
-            return el.event == "FeesClaimed"
-        })
-        const aliceFeesClaimed = aliceFeesClaimedEvent.args.fees
-        const aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(1)
-        expect(aliceFeesClaimed).to.equal(aliceBasePow.mul(firstCycleAccruedFees).div(firstCycleRewardPow))
-
-        const bobTx = await dbXeNFTFactoryBob.claimFees(2)
-        const bobReceipt = await bobTx.wait()
-        const bobFeesClaimedEvent = bobReceipt.events.find(function(el) {
-            return el.event == "FeesClaimed"
-        })
-        const bobClaimedFees = bobFeesClaimedEvent.args.fees
-        const bobBasePow = await dbXeNFTFactory.baseDBXeNFTPower(2)
-        expect(bobClaimedFees).to.equal(bobBasePow.mul(firstCycleAccruedFees).div(firstCycleRewardPow))
-
-        const carolTx = await dbXeNFTFactoryCarol.claimFees(3)
-        const carolReceipt = await carolTx.wait()
-        const carolFeesClaimedEvent = carolReceipt.events.find(function(el) {
-            return el.event == "FeesClaimed"
-        })
-        const carolFeesClaimed = carolFeesClaimedEvent.args.fees
-        const carolBasePow = await dbXeNFTFactory.baseDBXeNFTPower(3)
-        expect(carolFeesClaimed).to.equal(carolBasePow.mul(firstCycleAccruedFees).div(firstCycleRewardPow))
-
-        expect(firstCycleAccruedFees).to.equal(deployerFeesClaimed
-            .add(aliceFeesClaimed)
-            .add(bobClaimedFees)
-            .add(carolFeesClaimed)
-        )
+        let cycle4Reward = await dbXeNFTFactory.rewardPerCycle(4);
+        expect(cycle4Reward).to.equal(ethers.utils.parseEther("10406.0401"));
     })
 
-    it("Only fees claimed starting the next cycle after stake will be impacted by extra stake power", async function() {
+    it.only("Simple distribution of power between users", async function() {
+        let contractBalanceBeforeBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10001)
         await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
-
+        let contractBalanceAfterBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
+        expect(contractBalanceAfterBurn).to.be.greaterThan("0");
+        //MIN cost, term 1, numbers of vms 1
+        expect(contractBalanceAfterBurn).to.equal(ethers.utils.parseEther("0.001"));
 
         await xenftAlice.bulkClaimRank(1, 1)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
-        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1000"), 1, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") });
+        //MIN cost, term 1, numbers of vms 1
+        expect(await ethers.provider.getBalance(dbXeNFTFactory.address)).to.equal(contractBalanceAfterBurn.add(ethers.utils.parseEther("0.001")));
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
-        const firstCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(0)
-        const firstCycleAccruedFees = await dbXeNFTFactory.cycleAccruedFees(0)
+        await xenft.bulkClaimRank(1, 1)
+        await xenft.approve(dbXeNFTFactory.address, 10003)
+        await dbXeNFTFactory.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        let contractBalanceInSecondCycleAfterFirstBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
+        expect(contractBalanceInSecondCycleAfterFirstBurn).to.equal(ethers.utils.parseEther("0.003"));
 
-        let deployerTx = await dbXeNFTFactory.claimFees(0)
-        let deployerReceipt = await deployerTx.wait()
-        let deployerFeesClaimedEvent = deployerReceipt.events.find(function(el) {
-            return el.event == "FeesClaimed"
-        })
-        let deployerFeesClaimed = deployerFeesClaimedEvent.args.fees
-        let deployerBasePow = await dbXeNFTFactory.baseDBXeNFTPower(0)
-        expect(deployerFeesClaimed).to.equal(deployerBasePow.mul(firstCycleAccruedFees).div(firstCycleRewardPow))
+        await xenftAlice.bulkClaimRank(1, 1)
+        await xenftAlice.approve(dbXeNFTFactory.address, 10004)
+        await dbXeNFTFactoryAlice.burnNFT(10004, { value: ethers.utils.parseEther("1") });
+        let contractBalanceInSecondCycleAfterSecondBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
+        expect(contractBalanceInSecondCycleAfterSecondBurn).to.equal(ethers.utils.parseEther("0.004"));
 
-        let aliceTx = await dbXeNFTFactoryAlice.claimFees(1)
-        let aliceReceipt = await aliceTx.wait()
-        let aliceFeesClaimedEvent = aliceReceipt.events.find(function(el) {
-            return el.event == "FeesClaimed"
-        })
-        let aliceFeesClaimed = aliceFeesClaimedEvent.args.fees
-        let aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(1)
-        expect(aliceFeesClaimed).to.equal(aliceBasePow.mul(firstCycleAccruedFees).div(firstCycleRewardPow))
+        let initialBalanceForDeployer = await ethers.provider.getBalance(deployer.address);
+        let gas = await dbXeNFTFactory.claimFees(0);
+        const transactionReceipt = await ethers.provider.getTransactionReceipt(gas.hash);
+        const gasUsed = transactionReceipt.gasUsed;
+        const gasPricePaid = transactionReceipt.effectiveGasPrice;
+        const transactionFee = gasUsed.mul(gasPricePaid);
 
+        let deployerBalanceAfterClaim = await ethers.provider.getBalance(deployer.address);
+        expect(deployerBalanceAfterClaim.add(transactionFee).sub(ethers.utils.parseEther("0.001"))).to.equal(initialBalanceForDeployer);
 
-        expect(deployerFeesClaimed).to.equal(aliceFeesClaimed)
+        let initialBalanceForAlice = await ethers.provider.getBalance(alice.address);
+        let gasAlice = await dbXeNFTFactoryAlice.claimFees(1);
+        const transactionReceiptAlice = await ethers.provider.getTransactionReceipt(gasAlice.hash);
+        const gasUsedAlice = transactionReceiptAlice.gasUsed;
+        const gasPricePaidAlice = transactionReceiptAlice.effectiveGasPrice;
+        const transactionFeeAlice = gasUsedAlice.mul(gasPricePaidAlice);
 
-        const totalFeesClaimedFirstCycle = deployerFeesClaimed.add(aliceFeesClaimed)
-
-        await xenftBob.bulkClaimRank(100, 100)
-        await xenftBob.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactoryBob.burnNFT(10003, { value: ethers.utils.parseEther("1") })
-
-        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
-        await hre.ethers.provider.send("evm_mine")
-
-        const secondCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(1)
-        const secondCycleAccruedFees = await dbXeNFTFactory.cycleAccruedFees(1)
-
-        const bobTx = await dbXeNFTFactoryBob.claimFees(2)
-        const bobReceipt = await bobTx.wait()
-        const bobFeesClaimedEvent = bobReceipt.events.find(function(el) {
-            return el.event == "FeesClaimed"
-        })
-        const bobClaimedFees = bobFeesClaimedEvent.args.fees
-        const bobBasePow = await dbXeNFTFactory.baseDBXeNFTPower(2)
-        const totalPowSecondCycle = firstCycleRewardPow.add(secondCycleRewardPow).add(aliceBasePow)
-
-        expect(bobClaimedFees).to.equal(bobBasePow.mul(secondCycleAccruedFees)
-            .div(totalPowSecondCycle))
-
-        deployerTx = await dbXeNFTFactory.claimFees(0)
-        deployerReceipt = await deployerTx.wait()
-        deployerFeesClaimedEvent = deployerReceipt.events.find(function(el) {
-            return el.event == "FeesClaimed"
-        })
-        deployerFeesClaimed = deployerFeesClaimedEvent.args.fees
-        expect(deployerFeesClaimed).to.equal(deployerBasePow.mul(secondCycleAccruedFees).div(totalPowSecondCycle))
-
-        aliceTx = await dbXeNFTFactoryAlice.claimFees(1)
-        aliceReceipt = await aliceTx.wait()
-        aliceFeesClaimedEvent = aliceReceipt.events.find(function(el) {
-            return el.event == "FeesClaimed"
-        })
-        aliceFeesClaimed = aliceFeesClaimedEvent.args.fees
-        aliceDBXeNFTPow = await dbXeNFTFactory.DBXeNFTPower(1)
-        expect(aliceFeesClaimed).to.equal(aliceDBXeNFTPow.mul(secondCycleAccruedFees).div(totalPowSecondCycle))
-
-
-        expect(deployerFeesClaimed).to.not.equal(aliceFeesClaimed)
-        expect(firstCycleAccruedFees.add(secondCycleAccruedFees)).to.equal(
-            totalFeesClaimedFirstCycle.add(bobClaimedFees).add(deployerFeesClaimed)
-            .add(aliceFeesClaimed))
+        let AliceBalanceAfterClaim = await ethers.provider.getBalance(alice.address);
+        expect(AliceBalanceAfterClaim.add(transactionFeeAlice).sub(ethers.utils.parseEther("0.001"))).to.equal(initialBalanceForAlice);
     })
 
     it("Staking in entry cycle results in correct fees calculation", async function() {

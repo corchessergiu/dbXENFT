@@ -86,7 +86,7 @@ describe("Test burnNFT functionality", async function() {
     it("Only owner of XENFT can mint DBXeNFT", async function() {
         await xenft.bulkClaimRank(128, 1);
 
-        await expect(dbXeNFTFactory.connect(alice).burnNFT(10001), {value: ethers.utils.parseEther("1")})
+        await expect(dbXeNFTFactory.connect(alice).burnNFT(10001), { value: ethers.utils.parseEther("1") })
             .to.be.revertedWith("You do not own this NFT!")
     })
 
@@ -94,17 +94,17 @@ describe("Test burnNFT functionality", async function() {
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(dbXeNFTFactory.address, 10001)
 
-        await expect(dbXeNFTFactory.burnNFT(10001, {value: 1}))
+        await expect(dbXeNFTFactory.burnNFT(10001, { value: 1 }))
             .to.be.revertedWith("Payment less than fee")
     })
 
-    it.only("Burn a XENFT basic case", async function() {
+    it("Burn a XENFT basic case", async function() {
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(dbXeNFTFactory.address, 10001)
 
         const balanceBefore = await hre.ethers.provider.getBalance(deployer.address)
 
-        const tx = await dbXeNFTFactory.burnNFT(10001, {value: ethers.utils.parseEther("1")})
+        const tx = await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
         const receipt = await tx.wait()
 
         const balanceAfter = await hre.ethers.provider.getBalance(deployer.address);

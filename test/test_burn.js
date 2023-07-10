@@ -4,7 +4,7 @@ const exp = require("constants");
 const { BigNumber } = require("ethers");
 const { ethers } = require("hardhat");
 
-describe.only("Test burn functionality", async function() {
+describe("Test burn functionality", async function() {
     let xenft, DBXENFT, XENContract, DBX, aliceInstance, bobInstance, deanInstance;
     let alice, bob, carol, dean;
     beforeEach("Set enviroment", async() => {
@@ -488,7 +488,7 @@ describe.only("Test burn functionality", async function() {
         console.log("&&&&&&&&&&&&&&&&&&&&&&&&&---10006---&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
     });
 
-    it.only("Stake unstak functionality", async() => {
+    it("Stake unstak functionality", async() => {
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await XENContract.connect(alice).approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
