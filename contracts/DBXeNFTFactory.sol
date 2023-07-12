@@ -205,6 +205,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
 
         if(redeemed) {
             baseDBXeNFTPower[dbxenftId] = 1e18;
+            DBXeNFTPower[tokenId] = 1e18;
 
             if(currentCycleMem != 0) {
                 lastFeeUpdateCycle[dbxenftId] = lastStartedCycle + 1;
@@ -249,7 +250,6 @@ contract DBXeNFTFactory is ReentrancyGuard {
         calcPower = Math.mulDiv(power, dxnAmount, 1e21);
     }
 
-    //punem un anumit numar pe fiecare xen sau cum se trateaa aici?
     function stake(uint256 amount, uint256 tokenId) external payable nonReentrant onlyNFTOwner(DBXENFTInstance, tokenId, msg.sender) {
         calculateCycle();
         updateCycleFeesPerStakeSummed();
@@ -269,11 +269,6 @@ contract DBXeNFTFactory is ReentrancyGuard {
         }
 
         uint256 cycleToSet = currentCycleMem + 1;
-
-        // if (lastStartedCycle == currentStartedCycle) {
-        //     cycleToSet = currentCycle;
-        // }
-
         if (
             (cycleToSet != tokenFirstStake[tokenId] &&
                 cycleToSet != tokenSecondStake[tokenId])
@@ -321,7 +316,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
             summedCycleStakes[currentCycle] -= powerDecrease;
         }
 
-        dxn.safeTransfer(msg.sender, tokenWithdrawableStake[tokenId]);
+        dxn.safeTransfer(msg.sender, amount);
     }
 
     function claimFees(uint256 tokenId) external nonReentrant() onlyNFTOwner(DBXENFTInstance, tokenId, msg.sender){
@@ -364,9 +359,12 @@ contract DBXeNFTFactory is ReentrancyGuard {
 
         require(!mintInfo.getRedeemed(), "XENFT: Already redeemed");
 
+        require(currentCycle != tokenEntryCycle[tokenId], "Can not claim during entry cycle");
+
         uint256 DBXenftPow = DBXeNFTPower[tokenId];
-        if(DBXenftPow > 1e18) {
-            uint256 newPow = Math.mulDiv(DBXeNFTPower[tokenId], 1e18, baseDBXeNFTPower[tokenId]);
+        uint256 baseDBXeNFTPow = baseDBXeNFTPower[tokenId];
+        if(baseDBXeNFTPow > 1e18 && DBXenftPow != baseDBXeNFTPow) {
+            uint256 newPow = Math.mulDiv(DBXenftPow, 1e18, baseDBXeNFTPow);
             DBXeNFTPower[tokenId] = newPow;
             DBXenftPow -= newPow;
             baseDBXeNFTPower[tokenId] = 1e18;
@@ -496,10 +494,6 @@ contract DBXeNFTFactory is ReentrancyGuard {
                 pendingFees = 0;
             }
 
-            // if(pendingExtraPower != 0) {
-            //     summedCycleStakes[currentStartedCycle] += pendingExtraPower;
-            //     pendingExtraPower = 0;
-            // }
             if(tokenEntryPowerWithStake[lastStartedCycleMemory] != 0) {
                 uint256 powerForEntryWithStake = Math.mulDiv(tokenEntryPowerWithStake[lastStartedCycleMemory],
                     lastCycleReward, totalPowerPerCycle[lastStartedCycleMemory]); 
@@ -559,18 +553,10 @@ contract DBXeNFTFactory is ReentrancyGuard {
                 console.log(tokenId, lastStartedCycleMem, stakeCycle, currentStartedCycle);
                 if(lastStartedCycleMem != stakeCycle
                     && currentStartedCycle != lastStartedCycleMem) {
-                        // tokenAccruedFees[tokenId] += (DBXeNFTPower[tokenId] 
-                        // * (cycleFeesPerStakeSummed[stakeCycle + 1] - 
-                        // cycleFeesPerStakeSummed[precedentStartedCycle[stakeCycle] + 1])) / SCALING_FACTOR;
-                        // uint256 totalPower = DBXeNFTPower[tokenId] + extraPower;
-                        // uint256 stakeCycleFeesToSubract = (totalPower 
-                        //     * cycleAccruedFees[stakeCycle + 1]) / SCALING_FACTOR;
-                        // tokenAccruedFees[tokenId] += (totalPower 
-                        //     * (cycleFeesPerStakeSummed[lastStartedCycleMem + 1] - cycleFeesPerStakeSummed[stakeCycle + 1])) / SCALING_FACTOR;
-                        // tokenAccruedFees[tokenId] -= stakeCycleFeesToSubract;
                         tokenAccruedFees[tokenId] += (extraPower 
                         * (cycleFeesPerStakeSummed[lastStartedCycleMem + 1] - 
                         cycleFeesPerStakeSummed[stakeCycle + 1])) / SCALING_FACTOR;
+                        console.log("here");
                 }
                 pendingDXN[tokenId] = 0;
                 DBXeNFTPower[tokenId] += extraPower;
