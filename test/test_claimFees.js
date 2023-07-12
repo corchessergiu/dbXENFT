@@ -296,6 +296,12 @@ describe("Test fee claiming functionality", async function() {
 
         const firstCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(0)
         const firstCycleAccruedFees = await dbXeNFTFactory.cycleAccruedFees(0)
+
+        const secondCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(1)
+        const secondCycleAccruedFees = await dbXeNFTFactory.cycleAccruedFees(1)
+
+        const thirdCycleAccruedFees = await dbXeNFTFactory.cycleAccruedFees(2)
+
         let scalingFactor = await dbXeNFTFactory.SCALING_FACTOR()
         let cfpss3 = await dbXeNFTFactory.cycleFeesPerStakeSummed(3)
         let cfpss2 = await dbXeNFTFactory.cycleFeesPerStakeSummed(2)
@@ -307,6 +313,7 @@ describe("Test fee claiming functionality", async function() {
             return el.event == "FeesClaimed"
         })
         let deployerFeesClaimed = deployerFeesClaimedEvent.args.fees
+        console.log(deployerFeesClaimed)
         let deployerBasePow = await dbXeNFTFactory.baseDBXeNFTPower(0)
 
         expect(deployerFeesClaimed).to.equal(deployerBasePow.mul(cfpss3).div(scalingFactor))
@@ -317,8 +324,21 @@ describe("Test fee claiming functionality", async function() {
             return el.event == "FeesClaimed"
         })
         let deployerFeesClaimedSecondNFT = deployerFeesClaimedEvent.args.fees
+        console.log(deployerFeesClaimedSecondNFT)
         deployerBasePow = await dbXeNFTFactory.baseDBXeNFTPower(2)
         expect(deployerFeesClaimedSecondNFT).to.equal(deployerBasePow.mul(cfpss3.sub(cfpss1)).div(scalingFactor))
+            //expect(deployerFeesClaimedSecondNFT).to.equal(deployerBasePow.mul(thirdCycleAccruedFees).div(await dbXeNFTFactory.summedCycleStakes(2)))
+
+        deployerTx = await dbXeNFTFactory.claimFees(4)
+        deployerReceipt = await deployerTx.wait()
+        deployerFeesClaimedEvent = deployerReceipt.events.find(function(el) {
+            return el.event == "FeesClaimed"
+        })
+        let deployerFeesClaimedThirdNFT = deployerFeesClaimedEvent.args.fees
+        console.log(deployerFeesClaimedSecondNFT)
+        deployerBasePow = await dbXeNFTFactory.baseDBXeNFTPower(4)
+        expect(deployerFeesClaimedThirdNFT).to.equal(deployerBasePow.mul(cfpss3.sub(cfpss2)).div(scalingFactor))
+        expect(deployerFeesClaimedThirdNFT).to.equal(deployerBasePow.mul(thirdCycleAccruedFees).div(await dbXeNFTFactory.summedCycleStakes(2)))
 
         let aliceTx = await dbXeNFTFactoryAlice.claimFees(1)
         let aliceReceipt = await aliceTx.wait()
@@ -335,9 +355,11 @@ describe("Test fee claiming functionality", async function() {
         let aliceExtraPowFees = aliceExtraPow.mul(cfpss3.sub(cfpss1)).div(scalingFactor)
         expect(aliceFeesClaimed).to.equal(aliceEntryCycleFees.add(aliceRestFeesClaimed))
         expect(aliceFeesClaimed).to.equal(aliceBasePowFees.add(aliceExtraPowFees))
-
-        const secondCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(1)
-        const secondCycleAccruedFees = await dbXeNFTFactory.cycleAccruedFees(1)
+        expect(aliceFeesClaimed).to.equal(
+            (aliceBasePow.mul(firstCycleAccruedFees).div(await dbXeNFTFactory.summedCycleStakes(0)))
+            .add(aliceDBXeNFTPow.mul(secondCycleAccruedFees).div(await dbXeNFTFactory.summedCycleStakes(1)))
+            .add(aliceDBXeNFTPow.mul(thirdCycleAccruedFees).div(await dbXeNFTFactory.summedCycleStakes(2)))
+        )
 
         const bobTx = await dbXeNFTFactoryBob.claimFees(3)
         const bobReceipt = await bobTx.wait()
@@ -355,11 +377,13 @@ describe("Test fee claiming functionality", async function() {
         let bobExtraPowFees = bobExtraPow.mul(cfpss3.sub(cfpss2)).div(scalingFactor)
             //expect(bobClaimedFees).to.equal(bobEntryCycleFees.add(bobRestFeesClaimed))
         expect(bobClaimedFees).to.equal(bobBasePowFees.add(bobExtraPowFees))
-
-        const thirdCycleAccruedFees = await dbXeNFTFactory.cycleAccruedFees(2)
+            // expect(bobClaimedFees).to.equal(
+            //     (bobBasePow.mul(secondCycleAccruedFees).div(await dbXeNFTFactory.summedCycleStakes(1)))
+            //     .add(bobDBXeNFTPow.mul(thirdCycleAccruedFees).div(await dbXeNFTFactory.summedCycleStakes(2)))
+            // )
 
         expect(firstCycleAccruedFees.add(secondCycleAccruedFees).add(thirdCycleAccruedFees))
-            .to.equal(deployerFeesClaimed.add(deployerFeesClaimedSecondNFT)
+            .to.equal(deployerFeesClaimed.add(deployerFeesClaimedSecondNFT).add(deployerFeesClaimedThirdNFT)
                 .add(aliceFeesClaimed).add(bobClaimedFees))
     })
 })
