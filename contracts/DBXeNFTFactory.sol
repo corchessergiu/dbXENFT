@@ -247,7 +247,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
     }
 
     function calcExtraPower(uint256 power, uint256 dxnAmount) internal pure returns(uint256 calcPower){
-        calcPower = Math.mulDiv(power, dxnAmount, 1e21);
+        calcPower = Math.mulDiv(power, dxnAmount, 1e20);
     }
 
     function stake(uint256 amount, uint256 tokenId) external payable nonReentrant onlyNFTOwner(DBXENFTInstance, tokenId, msg.sender) {
@@ -324,7 +324,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
         updateCycleFeesPerStakeSummed();
         updateDBXeNFT(tokenId);
         uint256 fees = tokenAccruedFees[tokenId];
-        console.log("am fee ",fees);
+        console.log("CLAIM FEE FROM CONTRACT !",fees);
         require(fees > 0, "dbXENFT: amount is zero");
         tokenAccruedFees[tokenId] = 0;
         sendViaCall(payable(msg.sender), fees);
@@ -531,6 +531,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
 
     function updateDBXeNFT(uint256 tokenId) internal {
         uint256 entryCycle = tokenEntryCycle[tokenId];
+        console.log("TOKEN ID",tokenId);
         if(baseDBXeNFTPower[tokenId] == 0 && currentCycle > entryCycle) {
             baseDBXeNFTPower[tokenId] = Math.mulDiv(tokenEntryPower[tokenId],
                 rewardPerCycle[entryCycle], totalPowerPerCycle[entryCycle]);
@@ -542,7 +543,6 @@ contract DBXeNFTFactory is ReentrancyGuard {
             currentCycle > lastStartedCycleMem &&
             lastFeeUpdateCycle[tokenId] != lastStartedCycleMem + 1
         ) {
-            console.log("intr aici ",tokenId);
             tokenAccruedFees[tokenId] += (DBXeNFTPower[tokenId] 
                     * (cycleFeesPerStakeSummed[lastStartedCycleMem + 1] - cycleFeesPerStakeSummed[lastFeeUpdateCycle[tokenId]])) / SCALING_FACTOR;
 
@@ -550,14 +550,11 @@ contract DBXeNFTFactory is ReentrancyGuard {
             if(stakedDXN != 0) {
                 uint256 stakeCycle = tokenFirstStake[tokenId] - 1;
                 uint256 extraPower = calcExtraPower(baseDBXeNFTPower[tokenId], stakedDXN);
-            
-                console.log(tokenId, lastStartedCycleMem, stakeCycle, currentStartedCycle);
                 if(lastStartedCycleMem != stakeCycle
                     && currentStartedCycle != lastStartedCycleMem) {
                         tokenAccruedFees[tokenId] += (extraPower 
                         * (cycleFeesPerStakeSummed[lastStartedCycleMem + 1] - 
                         cycleFeesPerStakeSummed[stakeCycle + 1])) / SCALING_FACTOR;
-                        console.log("here");
                 }
                 pendingDXN[tokenId] = 0;
                 DBXeNFTPower[tokenId] += extraPower;
@@ -571,6 +568,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
             tokenFirstStakeMem != 0 &&
             currentCycle > tokenFirstStakeMem
         ) {
+            console.log("SE INTRA ");
             uint256 unlockedFirstStake = tokenStakeCycle[tokenId][tokenFirstStakeMem];
 
             tokenWithdrawableStake[tokenId] += unlockedFirstStake;
@@ -593,6 +591,9 @@ contract DBXeNFTFactory is ReentrancyGuard {
                 }
             }
         }
+
+        console.log("TOKENUL ARE ", tokenAccruedFees[tokenId]);
+        console.log("POWER PER TOKEN ID ",DBXeNFTPower[tokenId]);
     }
 
     /**
