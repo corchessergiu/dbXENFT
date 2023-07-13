@@ -247,7 +247,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
     }
 
     function calcExtraPower(uint256 power, uint256 dxnAmount) internal pure returns(uint256 calcPower){
-        calcPower = Math.mulDiv(power, dxnAmount, 1e21);
+        calcPower = Math.mulDiv(power, dxnAmount, 1e20);
     }
 
     function stake(uint256 amount, uint256 tokenId) external payable nonReentrant onlyNFTOwner(DBXENFTInstance, tokenId, msg.sender) {
