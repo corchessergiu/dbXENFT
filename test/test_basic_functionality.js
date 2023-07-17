@@ -208,8 +208,7 @@ describe("Test basic functionality", async function() {
         expect(AliceBalanceAfterClaim.add(transactionFeeAlice).sub(ethers.utils.parseEther("0.001"))).to.equal(initialBalanceForAlice);
     })
 
-    it.only("Simple distribution of power between users but with stake", async function() {
-
+    it("Simple distribution of power between users but with stake", async function() {
         //Cycle 1
         let contractBalanceBeforeBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         await xenft.bulkClaimRank(1, 1)
@@ -228,8 +227,7 @@ describe("Test basic functionality", async function() {
         await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1000"), 1, { value: ethers.utils.parseEther("1") });
         let contractBalanceAfterStake = await ethers.provider.getBalance(dbXeNFTFactory.address);
         expect(contractBalanceAfterStake).to.equal(contractBalanceAfterSecondBurn.add(ethers.utils.parseEther("1")));
-        console.log(await dbXeNFTFactory.cycleAccruedFees(0))
-            //MIN cost, term 1, numbers of vms 1
+        //MIN cost, term 1, numbers of vms 1
         expect(await dbXeNFTFactory.getCurrentCycle()).to.equal(0);
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
@@ -272,86 +270,61 @@ describe("Test basic functionality", async function() {
         let nftId2EntryPower = await dbXeNFTFactory.tokenEntryPower(2);
         let nftId3EntryPower = await dbXeNFTFactory.tokenEntryPower(3);
         let stakeExtraPower = await dbXeNFTFactory.dxnExtraEntryPower(1);
-        console.log("updatsssssssssssssssssssssssssssssssssssssssssssssssse")
-        console.log(stakeExtraPower);
 
-        // let extraPowerFor1 = nftId1EntryPower.mul(ethers.utils.parseEther("1000")).div(ethers.utils.parseEther("1000"));
-        // let extraPowerFor2 = extraPowerFor1.mul(ethers.utils.parseEther("1000")).div(ethers.utils.parseEther("1000"));
-        // //expect(extraPowerFor1.add(extraPowerFor2)).to.equal(stakeExtraPower);
+        let extraPowerFor1 = nftId1EntryPower.mul(ethers.utils.parseEther("1000")).div(ethers.utils.parseEther("100"));
+        expect(extraPowerFor1).to.equal(stakeExtraPower);
 
-        // // expect(await dbXeNFTFactory.totalExtraEntryPower(0)).to.equal(extraPowerFor1);
-        // // expect(await dbXeNFTFactory.totalExtraEntryPower(1)).to.equal("0");
-        // // expect(await dbXeNFTFactory.totalPowerPerCycle(0)).to.equal(nftId0EntryPower.add(nftId1EntryPower));
-        // // expect(await dbXeNFTFactory.totalPowerPerCycle(1)).to.equal(nftId2EntryPower.add(nftId3EntryPower));
+        expect(await dbXeNFTFactory.totalExtraEntryPower(0)).to.equal(extraPowerFor1);
+        expect(await dbXeNFTFactory.totalExtraEntryPower(1)).to.equal("0");
+        expect(await dbXeNFTFactory.totalPowerPerCycle(0)).to.equal(nftId0EntryPower.add(nftId1EntryPower));
+        expect(await dbXeNFTFactory.totalPowerPerCycle(1)).to.equal(nftId2EntryPower.add(nftId3EntryPower));
 
-        // console.log("contract balance ", await ethers.provider.getBalance(dbXeNFTFactory.address))
-        // let deployerBalance = await ethers.provider.getBalance(dbXeNFTFactory.address);
-        // let aliceBalance = await ethers.provider.getBalance(dbXeNFTFactory.address);
-        // console.log("BALANTE!")
-        // console.log(deployerBalance);
-        // console.log(aliceBalance);
-        // console.log("CLAIM:")
-        // await dbXeNFTFactory.claimFees(0);
-        // await dbXeNFTFactoryAlice.claimFees(1);
-        // let deployerBalanceAfter = await ethers.provider.getBalance(deployer.address);
-        // let aliceBalanceAfter = await ethers.provider.getBalance(alice.address);
-        // console.log("BALANTE DUPA!")
-        // console.log(deployerBalanceAfter);
-        // console.log(aliceBalanceAfter);
-        // console.log(await dbXeNFTFactory.tokenAccruedFees(0));
-        // console.log(await dbXeNFTFactory.tokenAccruedFees(1));
-        //expect(await dbXeNFTFactory.totalPowerPerCycle(0))
-        // console.log("POWER ", await dbXeNFTFactory.dxnExtraEntryPower(0));
-        // console.log("POWER ", await dbXeNFTFactory.dxnExtraEntryPower(1));
-        // console.log(await ethers.provider.getBalance(dbXeNFTFactory.address));
-        // let initialBalanceForDeployer = await ethers.provider.getBalance(deployer.address);
-        // let gas = await dbXeNFTFactory.claimFees(0);
-        // const transactionReceipt = await ethers.provider.getTransactionReceipt(gas.hash);
-        // const gasUsed = transactionReceipt.gasUsed;
-        // const gasPricePaid = transactionReceipt.effectiveGasPrice;
-        // const transactionFee = gasUsed.mul(gasPricePaid);
+        let deployerBalance = await ethers.provider.getBalance(dbXeNFTFactory.address);
+        let aliceBalance = await ethers.provider.getBalance(dbXeNFTFactory.address);
+        await dbXeNFTFactory.claimFees(0);
+        await dbXeNFTFactoryAlice.claimFees(1);
+        let deployerBalanceAfter = await ethers.provider.getBalance(deployer.address);
+        let aliceBalanceAfter = await ethers.provider.getBalance(alice.address);
+        expect(await dbXeNFTFactory.totalPowerPerCycle(0));
+    })
 
-        // let deployerBalanceAfterClaim = await ethers.provider.getBalance(deployer.address);
-        // //expect(deployerBalanceAfterClaim.add(transactionFee).sub(ethers.utils.parseEther("0.001"))).to.equal(initialBalanceForDeployer);
+    it.only("Test power distribution", async function() {
+        //Cycle 1
+        let contractBalanceBeforeBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
+        await xenft.bulkClaimRank(1, 1)
+        await xenft.approve(dbXeNFTFactory.address, 10001)
+        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        let contractBalanceAfterBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
+        expect(contractBalanceAfterBurn).to.be.greaterThan("0");
+        //MIN cost, term 1, numbers of vms 1
+        expect(contractBalanceAfterBurn).to.equal(ethers.utils.parseEther("0.001"));
 
-        // let initialBalanceForAlice = await ethers.provider.getBalance(alice.address);
-        // let gasAlice = await dbXeNFTFactoryAlice.claimFees(1);
-        // const transactionReceiptAlice = await ethers.provider.getTransactionReceipt(gasAlice.hash);
-        // const gasUsedAlice = transactionReceiptAlice.gasUsed;
-        // const gasPricePaidAlice = transactionReceiptAlice.effectiveGasPrice;
-        // const transactionFeeAlice = gasUsedAlice.mul(gasPricePaidAlice);
+        await xenftAlice.bulkClaimRank(1, 1)
+        await xenftAlice.approve(dbXeNFTFactory.address, 10002)
+        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") });
+        let contractBalanceAfterSecondBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
+        //MIN cost, term 1, numbers of vms 1
+        expect(await dbXeNFTFactory.getCurrentCycle()).to.equal(0);
+        let rewardCycle0 = await dbXeNFTFactory.rewardPerCycle(0)
+        expect(rewardCycle0).to.equal(ethers.utils.parseEther("10000"));
 
-        // await xenft.bulkClaimRank(1, 1)
-        // await xenft.approve(dbXeNFTFactory.address, 10003)
-        // await dbXeNFTFactory.burnNFT(10003, { value: ethers.utils.parseEther("1") })
-        // let contractBalanceInSecondCycleAfterFirstBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
-        // expect(contractBalanceInSecondCycleAfterFirstBurn).to.equal(ethers.utils.parseEther("0.003"));
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
+        await hre.ethers.provider.send("evm_mine")
+        expect(await dbXeNFTFactory.getCurrentCycle()).to.equal(1);
 
-        // await xenftAlice.bulkClaimRank(1, 1)
-        // await xenftAlice.approve(dbXeNFTFactory.address, 10004)
-        // await dbXeNFTFactoryAlice.burnNFT(10004, { value: ethers.utils.parseEther("1") });
-        // let contractBalanceInSecondCycleAfterSecondBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
-        // expect(contractBalanceInSecondCycleAfterSecondBurn).to.equal(ethers.utils.parseEther("0.004"));
+        //Cycle 2
+        await xenft.bulkClaimRank(1, 1)
+        await xenft.approve(dbXeNFTFactory.address, 10003)
+        await dbXeNFTFactory.burnNFT(10003, { value: ethers.utils.parseEther("1") })
 
-        // let initialBalanceForDeployer = await ethers.provider.getBalance(deployer.address);
-        // let gas = await dbXeNFTFactory.claimFees(0);
-        // const transactionReceipt = await ethers.provider.getTransactionReceipt(gas.hash);
-        // const gasUsed = transactionReceipt.gasUsed;
-        // const gasPricePaid = transactionReceipt.effectiveGasPrice;
-        // const transactionFee = gasUsed.mul(gasPricePaid);
+        await xenftAlice.bulkClaimRank(1, 1)
+        await xenftAlice.approve(dbXeNFTFactory.address, 10004)
+        await dbXeNFTFactoryAlice.burnNFT(10004, { value: ethers.utils.parseEther("1") });
 
-        // let deployerBalanceAfterClaim = await ethers.provider.getBalance(deployer.address);
-        // expect(deployerBalanceAfterClaim.add(transactionFee).sub(ethers.utils.parseEther("0.001"))).to.equal(initialBalanceForDeployer);
+        let increseValue = rewardCycle0 * 0.01;
+        let rewardCycle1 = rewardCycle0.add(BigNumber.from(increseValue.toString()));
+        expect(rewardCycle1).to.equal(await dbXeNFTFactory.rewardPerCycle(1));
 
-        // let initialBalanceForAlice = await ethers.provider.getBalance(alice.address);
-        // let gasAlice = await dbXeNFTFactoryAlice.claimFees(1);
-        // const transactionReceiptAlice = await ethers.provider.getTransactionReceipt(gasAlice.hash);
-        // const gasUsedAlice = transactionReceiptAlice.gasUsed;
-        // const gasPricePaidAlice = transactionReceiptAlice.effectiveGasPrice;
-        // const transactionFeeAlice = gasUsedAlice.mul(gasPricePaidAlice);
-
-        // let AliceBalanceAfterClaim = await ethers.provider.getBalance(alice.address);
-        // expect(AliceBalanceAfterClaim.add(transactionFeeAlice).sub(ethers.utils.parseEther("0.001"))).to.equal(initialBalanceForAlice);
     })
 
 })
