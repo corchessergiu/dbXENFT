@@ -288,7 +288,7 @@ describe("Test basic functionality", async function() {
         expect(await dbXeNFTFactory.totalPowerPerCycle(0));
     })
 
-    it.only("Test power distribution", async function() {
+    it("Test power distribution", async function() {
         //Cycle 1
         let contractBalanceBeforeBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         await xenft.bulkClaimRank(1, 1)
@@ -324,7 +324,5 @@ describe("Test basic functionality", async function() {
         let increseValue = rewardCycle0 * 0.01;
         let rewardCycle1 = rewardCycle0.add(BigNumber.from(increseValue.toString()));
         expect(rewardCycle1).to.equal(await dbXeNFTFactory.rewardPerCycle(1));
-
     })
-
 })

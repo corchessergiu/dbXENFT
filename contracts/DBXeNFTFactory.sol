@@ -531,7 +531,6 @@ contract DBXeNFTFactory is ReentrancyGuard {
 
     function updateDBXeNFT(uint256 tokenId) internal {
         uint256 entryCycle = tokenEntryCycle[tokenId];
-        console.log("TOKEN ID",tokenId);
         if(baseDBXeNFTPower[tokenId] == 0 && currentCycle > entryCycle) {
             baseDBXeNFTPower[tokenId] = Math.mulDiv(tokenEntryPower[tokenId],
                 rewardPerCycle[entryCycle], totalPowerPerCycle[entryCycle]);
@@ -568,7 +567,6 @@ contract DBXeNFTFactory is ReentrancyGuard {
             tokenFirstStakeMem != 0 &&
             currentCycle > tokenFirstStakeMem
         ) {
-            console.log("SE INTRA ");
             uint256 unlockedFirstStake = tokenStakeCycle[tokenId][tokenFirstStakeMem];
 
             tokenWithdrawableStake[tokenId] += unlockedFirstStake;
@@ -591,9 +589,6 @@ contract DBXeNFTFactory is ReentrancyGuard {
                 }
             }
         }
-
-        console.log("TOKENUL ARE ", tokenAccruedFees[tokenId]);
-        console.log("POWER PER TOKEN ID ",DBXeNFTPower[tokenId]);
     }
 
     /**
