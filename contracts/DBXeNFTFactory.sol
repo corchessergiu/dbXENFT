@@ -3,27 +3,26 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/interfaces/IERC20.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "./interfaces/IXENCrypto.sol";
+import "./interfaces/IXENFT.sol";
 import "./libs/MintInfo.sol";
-import "./XENFT.sol";
-import "./DBXenERC20.sol";
 import "./DBXENFT.sol";
 
 contract DBXeNFTFactory is ReentrancyGuard {
     using MintInfo for uint256;
-    using SafeERC20 for ERC20;
+    using SafeERC20 for IERC20;
 
     /**
      * XENFT Token contract.
      */
-    XENTorrent public xenft;
+    IXENFT public immutable xenft;
 
     /**
      * DBXen Reward Token contract.
      */
-    ERC20 public immutable dxn;
+    IERC20 public immutable dxn;
 
     /**
      * Xen Token contract.
@@ -295,7 +294,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
      * @dev Used to check if the user owns a certain DBXENFT/XENFT.
      */
     modifier onlyNFTOwner(
-        ERC721 tokenAddress,
+        IERC721 tokenAddress,
         uint256 tokenId,
         address user
     ) {
@@ -317,8 +316,8 @@ contract DBXeNFTFactory is ReentrancyGuard {
         address xenftAddress,
         address _xenCrypto
     ) {
-        dxn = DBXenERC20(dbxAddress);
-        xenft = XENTorrent(xenftAddress);
+        dxn = IERC20(dbxAddress);
+        xenft = IXENFT(xenftAddress);
         xenCrypto = IXENCrypto(_xenCrypto);
         i_periodDuration = 1 days;
         i_initialTimestamp = block.timestamp;
