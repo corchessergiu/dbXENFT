@@ -503,9 +503,14 @@ contract DBXeNFTFactory is ReentrancyGuard {
         calculateCycle();
         updateCycleFeesPerStakeSummed();
         updateDBXeNFT(tokenId);
+
         require(
-            dbxenftWithdrawableStake[tokenId] > 0,
-            "DBXeNFT: No withdrawable DXN available."
+            amount > 0,
+            "DBXeNFT: Amount is zero."
+        );
+        require(
+            amount <= dbxenftWithdrawableStake[tokenId],
+            "DBXeNFT: Amount greater than withdrawable stake"
         );
 
         uint256 powerDecrease = calcExtraPower(baseDBXeNFTPower[tokenId], amount);
