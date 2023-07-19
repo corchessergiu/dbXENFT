@@ -79,7 +79,7 @@ describe("Test unstake functionality", async function() {
 
         dbXeNFTFactory = await DBXeNFTFactory.deploy(DBX.address, xenft.address, XENContract.address);
         await dbXeNFTFactory.deployed();
-        const DBXeNFTAddress = await dbXeNFTFactory.DBXENFTInstance()
+        const DBXeNFTAddress = await dbXeNFTFactory.dbxenft()
         DBXeNFT = await ethers.getContractAt("DBXENFT", DBXeNFTAddress, deployer)
 
         dbXeNFTFactoryAlice = dbXeNFTFactory.connect(alice)
@@ -106,15 +106,15 @@ describe("Test unstake functionality", async function() {
 
     });
 
-    it.only("Basic unstake case", async function() {
+    it("Basic unstake case", async function() {
         await xenft.bulkClaimRank(13, 37)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactory.stake(ethers.utils.parseEther("2"), 0, { value: ethers.utils.parseEther("5") })
 
         await xenftAlice.bulkClaimRank(49, 77)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("233"), 1, { value: ethers.utils.parseEther("5") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
@@ -122,7 +122,7 @@ describe("Test unstake functionality", async function() {
 
         await xenftBob.bulkClaimRank(41, 2)
         await xenftBob.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactoryBob.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryBob.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryBob.stake(ethers.utils.parseEther("21"), 2, { value: ethers.utils.parseEther("5") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
@@ -157,7 +157,7 @@ describe("Test unstake functionality", async function() {
 
         // await xenft.bulkClaimRank(1, 1)
         // await xenft.approve(dbXeNFTFactory.address, 10005)
-        // await dbXeNFTFactory.burnNFT(10005, { value: ethers.utils.parseEther("1") })
+        // await dbXeNFTFactory.mintDBXENFT(10005, { value: ethers.utils.parseEther("1") })
 
         // expect(await dbXeNFTFactory.tokenWithdrawableStake(1)).to.equal(0)
 

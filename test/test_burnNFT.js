@@ -4,7 +4,7 @@ const exp = require("constants");
 const { BigNumber } = require("ethers");
 const { ethers } = require("hardhat");
 
-describe("Test burnNFT functionality", async function() {
+describe("Test mintDBXENFT functionality", async function() {
     let xenft, dbXeNFTFactory, XENContract, DBX, DBXeNFT;
     let alice, bob, carol, dean;
     beforeEach("Set enviroment", async() => {
@@ -79,14 +79,14 @@ describe("Test burnNFT functionality", async function() {
 
         dbXeNFTFactory = await DBXeNFTFactory.deploy(DBX.address, xenft.address, XENContract.address);
         await dbXeNFTFactory.deployed();
-        const DBXeNFTAddress = await dbXeNFTFactory.DBXENFTInstance()
+        const DBXeNFTAddress = await dbXeNFTFactory.dbxenft()
         DBXeNFT = await ethers.getContractAt("DBXENFT", DBXeNFTAddress, deployer)
     });
 
     it("Only owner of XENFT can mint DBXeNFT", async function() {
         await xenft.bulkClaimRank(128, 1);
 
-        await expect(dbXeNFTFactory.connect(alice).burnNFT(10001), { value: ethers.utils.parseEther("1") })
+        await expect(dbXeNFTFactory.connect(alice).mintDBXENFT(10001), { value: ethers.utils.parseEther("1") })
             .to.be.revertedWith("You do not own this NFT!")
     })
 
@@ -94,7 +94,7 @@ describe("Test burnNFT functionality", async function() {
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(dbXeNFTFactory.address, 10001)
 
-        await expect(dbXeNFTFactory.burnNFT(10001, { value: 1 }))
+        await expect(dbXeNFTFactory.mintDBXENFT(10001, { value: 1 }))
             .to.be.revertedWith("Payment less than fee")
     })
 
@@ -104,7 +104,7 @@ describe("Test burnNFT functionality", async function() {
 
         const balanceBefore = await hre.ethers.provider.getBalance(deployer.address)
 
-        const tx = await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        const tx = await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
         const receipt = await tx.wait()
 
         const balanceAfter = await hre.ethers.provider.getBalance(deployer.address);
@@ -119,7 +119,7 @@ describe("Test burnNFT functionality", async function() {
         expect(await DBXeNFT.ownerOf(0)).to.equal(deployer.address)
         expect(await dbXeNFTFactory.tokenEntryCycle(0)).to.equal(0)
         expect(await dbXeNFTFactory.tokenUnderlyingXENFT(0)).to.equal(10001)
-        expect(await dbXeNFTFactory.tokenEntryPower(0)).to.not.equal(0)
+        expect(await dbXeNFTFactory.dbxenftEntryPower(0)).to.not.equal(0)
         expect(await xenft.ownerOf(10001)).to.equal(dbXeNFTFactory.address)
     })
 })

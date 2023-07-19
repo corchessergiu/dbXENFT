@@ -81,7 +81,7 @@ describe("Test stake functionality", async function() {
 
         dbXeNFTFactory = await DBXeNFTFactory.deploy(DBX.address, xenft.address, XENContract.address);
         await dbXeNFTFactory.deployed();
-        const DBXeNFTAddress = await dbXeNFTFactory.DBXENFTInstance()
+        const DBXeNFTAddress = await dbXeNFTFactory.dbxenft()
         DBXeNFT = await ethers.getContractAt("DBXENFT", DBXeNFTAddress, deployer)
 
         dbXeNFTFactoryAlice = dbXeNFTFactory.connect(alice)
@@ -110,7 +110,7 @@ describe("Test stake functionality", async function() {
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(dbXeNFTFactory.address, 10001)
 
-        const tx = await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        const tx = await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
 
         await expect(dbXeNFTFactory.connect(alice).stake(ethers.utils.parseEther("1"), 0))
             .to.be.revertedWith("You do not own this NFT!")
@@ -120,7 +120,7 @@ describe("Test stake functionality", async function() {
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(dbXeNFTFactory.address, 10001)
 
-        const tx = await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        const tx = await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
 
         await DBX.approve(dbXeNFTFactory.address, ethers.utils.parseEther("2000"))
         await dbXeNFTFactory.stake(ethers.utils.parseEther("1000"), 0, { value: ethers.utils.parseEther("1") })
@@ -133,7 +133,7 @@ describe("Test stake functionality", async function() {
         await xenft.bulkClaimRank(128, 1);
         await xenft.approve(dbXeNFTFactory.address, 10001)
 
-        const tx = await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        const tx = await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
 
         await DBX.approve(dbXeNFTFactory.address, ethers.utils.parseEther("1001"))
         await dbXeNFTFactory.stake(ethers.utils.parseEther("1000"), 0, { value: ethers.utils.parseEther("1") })
@@ -143,59 +143,59 @@ describe("Test stake functionality", async function() {
 
         await dbXeNFTFactory.stake(ethers.utils.parseEther("1"), 0, { value: ethers.utils.parseEther("0.001") })
         const basePow = await dbXeNFTFactory.baseDBXeNFTPower(0)
-        expect(await dbXeNFTFactory.DBXeNFTPower(0)).to.equal(basePow.mul(BigNumber.from(2)))
+        expect(await dbXeNFTFactory.dbxenftPower(0)).to.equal(basePow.mul(BigNumber.from(2)))
     })
 
     it("Multiple entries and stakings coming from different addresses", async function() {
         await xenft.bulkClaimRank(128, 1)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
 
 
         await xenftAlice.bulkClaimRank(64, 7)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1000"), 1, { value: ethers.utils.parseEther("1") })
 
 
         await xenftBob.bulkClaimRank(100, 100)
         await xenftBob.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactoryBob.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryBob.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryBob.stake(ethers.utils.parseEther("100"), 2, { value: ethers.utils.parseEther("1") })
 
         await xenftCarol.bulkClaimRank(32, 100)
         await xenftCarol.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactoryCarol.burnNFT(10004, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryCarol.mintDBXENFT(10004, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryCarol.stake(ethers.utils.parseEther("500"), 3, { value: ethers.utils.parseEther("1") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
-        const totalEntryPow = await dbXeNFTFactory.totalPowerPerCycle(0)
+        const totalEntryPow = await dbXeNFTFactory.totalEntryPowerPerCycle(0)
         const firstCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(0)
 
-        const deployerEntryPow = await dbXeNFTFactory.tokenEntryPower(0)
+        const deployerEntryPow = await dbXeNFTFactory.dbxenftEntryPower(0)
         await dbXeNFTFactory.claimFees(0)
         expect(await dbXeNFTFactory.baseDBXeNFTPower(0)).to.equal(deployerEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const aliceEntryPow = await dbXeNFTFactory.tokenEntryPower(1)
+        const aliceEntryPow = await dbXeNFTFactory.dbxenftEntryPower(1)
         await dbXeNFTFactoryAlice.claimFees(1)
         const aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(1)
         expect(aliceBasePow).to.equal(aliceEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const bobEntryPow = await dbXeNFTFactory.tokenEntryPower(2)
+        const bobEntryPow = await dbXeNFTFactory.dbxenftEntryPower(2)
         await dbXeNFTFactoryBob.claimFees(2)
         const bobBasePow = await dbXeNFTFactory.baseDBXeNFTPower(2)
         expect(bobBasePow).to.equal(bobEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const carolEntryPow = await dbXeNFTFactory.tokenEntryPower(3)
+        const carolEntryPow = await dbXeNFTFactory.dbxenftEntryPower(3)
         await dbXeNFTFactoryCarol.claimFees(3)
         const carolBasePow = await dbXeNFTFactory.baseDBXeNFTPower(3)
         expect(carolBasePow).to.equal(carolEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10005)
-        await dbXeNFTFactory.burnNFT(10005, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10005, { value: ethers.utils.parseEther("1") })
 
         const ePow21 = ethers.utils.parseEther("1000")
         const aliceDBXeNFTPow = aliceBasePow.mul(ethers.utils.parseEther("1000")).div(ePow21)
@@ -214,53 +214,53 @@ describe("Test stake functionality", async function() {
     it("Stake power should apply in the next active cycle following an inactive one", async function() {
         await xenft.bulkClaimRank(80, 2)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
 
 
         await xenftAlice.bulkClaimRank(50, 40)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1"), 1, { value: ethers.utils.parseEther("1") })
 
 
         await xenftBob.bulkClaimRank(100, 90)
         await xenftBob.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactoryBob.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryBob.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryBob.stake(ethers.utils.parseEther("23"), 2, { value: ethers.utils.parseEther("1") })
 
         await xenftCarol.bulkClaimRank(2, 100)
         await xenftCarol.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactoryCarol.burnNFT(10004, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryCarol.mintDBXENFT(10004, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryCarol.stake(ethers.utils.parseEther("7"), 3, { value: ethers.utils.parseEther("1") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24 * 2])
         await hre.ethers.provider.send("evm_mine")
 
-        const totalEntryPow = await dbXeNFTFactory.totalPowerPerCycle(0)
+        const totalEntryPow = await dbXeNFTFactory.totalEntryPowerPerCycle(0)
         const firstCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(0)
 
-        const deployerEntryPow = await dbXeNFTFactory.tokenEntryPower(0)
+        const deployerEntryPow = await dbXeNFTFactory.dbxenftEntryPower(0)
         await dbXeNFTFactory.claimFees(0)
         expect(await dbXeNFTFactory.baseDBXeNFTPower(0)).to.equal(deployerEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const aliceEntryPow = await dbXeNFTFactory.tokenEntryPower(1)
+        const aliceEntryPow = await dbXeNFTFactory.dbxenftEntryPower(1)
         await dbXeNFTFactoryAlice.claimFees(1)
         const aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(1)
         expect(aliceBasePow).to.equal(aliceEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const bobEntryPow = await dbXeNFTFactory.tokenEntryPower(2)
+        const bobEntryPow = await dbXeNFTFactory.dbxenftEntryPower(2)
         await dbXeNFTFactoryBob.claimFees(2)
         const bobBasePow = await dbXeNFTFactory.baseDBXeNFTPower(2)
         expect(bobBasePow).to.equal(bobEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const carolEntryPow = await dbXeNFTFactory.tokenEntryPower(3)
+        const carolEntryPow = await dbXeNFTFactory.dbxenftEntryPower(3)
         await dbXeNFTFactoryCarol.claimFees(3)
         const carolBasePow = await dbXeNFTFactory.baseDBXeNFTPower(3)
         expect(carolBasePow).to.equal(carolEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10005)
-        await dbXeNFTFactory.burnNFT(10005, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10005, { value: ethers.utils.parseEther("1") })
 
         const ePow21 = ethers.utils.parseEther("1000")
         const aliceDBXeNFTPow = aliceBasePow.mul(ethers.utils.parseEther("1")).div(ePow21)
@@ -277,16 +277,16 @@ describe("Test stake functionality", async function() {
     it("Stake during an inactive cycle counts towards next active cycle", async function() {
         await xenft.bulkClaimRank(32, 30)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
 
 
         await xenftAlice.bulkClaimRank(41, 15)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
 
         await xenftBob.bulkClaimRank(87, 50)
         await xenftBob.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactoryBob.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryBob.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
@@ -297,26 +297,26 @@ describe("Test stake functionality", async function() {
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
-        const totalEntryPow = await dbXeNFTFactory.totalPowerPerCycle(0)
+        const totalEntryPow = await dbXeNFTFactory.totalEntryPowerPerCycle(0)
         const firstCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(0)
 
-        const deployerEntryPow = await dbXeNFTFactory.tokenEntryPower(0)
+        const deployerEntryPow = await dbXeNFTFactory.dbxenftEntryPower(0)
         await dbXeNFTFactory.claimFees(0)
         expect(await dbXeNFTFactory.baseDBXeNFTPower(0)).to.equal(deployerEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const aliceEntryPow = await dbXeNFTFactory.tokenEntryPower(1)
+        const aliceEntryPow = await dbXeNFTFactory.dbxenftEntryPower(1)
         await dbXeNFTFactoryAlice.claimFees(1)
         const aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(1)
         expect(aliceBasePow).to.equal(aliceEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const bobEntryPow = await dbXeNFTFactory.tokenEntryPower(2)
+        const bobEntryPow = await dbXeNFTFactory.dbxenftEntryPower(2)
         await dbXeNFTFactoryBob.claimFees(2)
         const bobBasePow = await dbXeNFTFactory.baseDBXeNFTPower(2)
         expect(bobBasePow).to.equal(bobEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactory.burnNFT(10004, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10004, { value: ethers.utils.parseEther("1") })
 
         const ePow21 = ethers.utils.parseEther("1000")
         const aliceDBXeNFTPow = aliceBasePow.mul(ethers.utils.parseEther("11")).div(ePow21)
@@ -331,54 +331,54 @@ describe("Test stake functionality", async function() {
     it("Multiple stakes during the same active cycle", async function() {
         await xenft.bulkClaimRank(128, 1)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
 
 
         await xenftAlice.bulkClaimRank(64, 7)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1000"), 1, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("0.3"), 1, { value: ethers.utils.parseEther("1") })
 
         await xenftBob.bulkClaimRank(100, 100)
         await xenftBob.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactoryBob.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryBob.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryBob.stake(ethers.utils.parseEther("100"), 2, { value: ethers.utils.parseEther("1") })
 
         await xenftCarol.bulkClaimRank(32, 100)
         await xenftCarol.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactoryCarol.burnNFT(10004, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryCarol.mintDBXENFT(10004, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryCarol.stake(ethers.utils.parseEther("500"), 3, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryCarol.stake(ethers.utils.parseEther("499"), 3, { value: ethers.utils.parseEther("1") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
-        const totalEntryPow = await dbXeNFTFactory.totalPowerPerCycle(0)
+        const totalEntryPow = await dbXeNFTFactory.totalEntryPowerPerCycle(0)
         const firstCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(0)
 
-        const deployerEntryPow = await dbXeNFTFactory.tokenEntryPower(0)
+        const deployerEntryPow = await dbXeNFTFactory.dbxenftEntryPower(0)
         await dbXeNFTFactory.claimFees(0)
         expect(await dbXeNFTFactory.baseDBXeNFTPower(0)).to.equal(deployerEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const aliceEntryPow = await dbXeNFTFactory.tokenEntryPower(1)
+        const aliceEntryPow = await dbXeNFTFactory.dbxenftEntryPower(1)
         await dbXeNFTFactoryAlice.claimFees(1)
         const aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(1)
         expect(aliceBasePow).to.equal(aliceEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const bobEntryPow = await dbXeNFTFactory.tokenEntryPower(2)
+        const bobEntryPow = await dbXeNFTFactory.dbxenftEntryPower(2)
         await dbXeNFTFactoryBob.claimFees(2)
         const bobBasePow = await dbXeNFTFactory.baseDBXeNFTPower(2)
         expect(bobBasePow).to.equal(bobEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const carolEntryPow = await dbXeNFTFactory.tokenEntryPower(3)
+        const carolEntryPow = await dbXeNFTFactory.dbxenftEntryPower(3)
         await dbXeNFTFactoryCarol.claimFees(3)
         const carolBasePow = await dbXeNFTFactory.baseDBXeNFTPower(3)
         expect(carolBasePow).to.equal(carolEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10005)
-        await dbXeNFTFactory.burnNFT(10005, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10005, { value: ethers.utils.parseEther("1") })
 
         const ePow21 = ethers.utils.parseEther("1000")
         const aliceDBXeNFTPow = aliceBasePow.mul(ethers.utils.parseEther("1000.3")).div(ePow21)
@@ -395,16 +395,16 @@ describe("Test stake functionality", async function() {
     it("Multiple stakes during the same inactive cycle", async function() {
         await xenft.bulkClaimRank(32, 30)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
 
 
         await xenftAlice.bulkClaimRank(1, 1)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
 
         await xenftBob.bulkClaimRank(87, 50)
         await xenftBob.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactoryBob.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryBob.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
@@ -417,26 +417,26 @@ describe("Test stake functionality", async function() {
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
-        const totalEntryPow = await dbXeNFTFactory.totalPowerPerCycle(0)
+        const totalEntryPow = await dbXeNFTFactory.totalEntryPowerPerCycle(0)
         const firstCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(0)
 
-        const deployerEntryPow = await dbXeNFTFactory.tokenEntryPower(0)
+        const deployerEntryPow = await dbXeNFTFactory.dbxenftEntryPower(0)
         await dbXeNFTFactory.claimFees(0)
         expect(await dbXeNFTFactory.baseDBXeNFTPower(0)).to.equal(deployerEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const aliceEntryPow = await dbXeNFTFactory.tokenEntryPower(1)
+        const aliceEntryPow = await dbXeNFTFactory.dbxenftEntryPower(1)
         await dbXeNFTFactoryAlice.claimFees(1)
         const aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(1)
         expect(aliceBasePow).to.equal(aliceEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const bobEntryPow = await dbXeNFTFactory.tokenEntryPower(2)
+        const bobEntryPow = await dbXeNFTFactory.dbxenftEntryPower(2)
         await dbXeNFTFactoryBob.claimFees(2)
         const bobBasePow = await dbXeNFTFactory.baseDBXeNFTPower(2)
         expect(bobBasePow).to.equal(bobEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactory.burnNFT(10004, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10004, { value: ethers.utils.parseEther("1") })
 
         const ePow21 = ethers.utils.parseEther("1000")
         const aliceDBXeNFTPow = aliceBasePow.mul(ethers.utils.parseEther("99")).div(ePow21)
@@ -451,16 +451,16 @@ describe("Test stake functionality", async function() {
     it("Stake during two consecutive active cycle", async function() {
         await xenft.bulkClaimRank(25, 14)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
 
 
         await xenftAlice.bulkClaimRank(5, 5)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
 
         await xenftBob.bulkClaimRank(11, 13)
         await xenftBob.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactoryBob.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryBob.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
 
         await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("144"), 1, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryBob.stake(ethers.utils.parseEther("789"), 2, { value: ethers.utils.parseEther("1") })
@@ -470,7 +470,7 @@ describe("Test stake functionality", async function() {
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactory.burnNFT(10004, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10004, { value: ethers.utils.parseEther("1") })
 
         await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("441"), 1, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryBob.stake(ethers.utils.parseEther("987"), 2, { value: ethers.utils.parseEther("1") })
@@ -478,26 +478,26 @@ describe("Test stake functionality", async function() {
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
-        const totalEntryPow = await dbXeNFTFactory.totalPowerPerCycle(0)
+        const totalEntryPow = await dbXeNFTFactory.totalEntryPowerPerCycle(0)
         const firstCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(0)
 
-        const deployerEntryPow = await dbXeNFTFactory.tokenEntryPower(0)
+        const deployerEntryPow = await dbXeNFTFactory.dbxenftEntryPower(0)
         await dbXeNFTFactory.claimFees(0)
         expect(await dbXeNFTFactory.baseDBXeNFTPower(0)).to.equal(deployerEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const aliceEntryPow = await dbXeNFTFactory.tokenEntryPower(1)
+        const aliceEntryPow = await dbXeNFTFactory.dbxenftEntryPower(1)
         await dbXeNFTFactoryAlice.claimFees(1)
         const aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(1)
         expect(aliceBasePow).to.equal(aliceEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const bobEntryPow = await dbXeNFTFactory.tokenEntryPower(2)
+        const bobEntryPow = await dbXeNFTFactory.dbxenftEntryPower(2)
         await dbXeNFTFactoryBob.claimFees(2)
         const bobBasePow = await dbXeNFTFactory.baseDBXeNFTPower(2)
         expect(bobBasePow).to.equal(bobEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10005)
-        await dbXeNFTFactory.burnNFT(10005, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10005, { value: ethers.utils.parseEther("1") })
 
         const ePow21 = ethers.utils.parseEther("1000")
         const aliceDBXeNFTPow = aliceBasePow.mul(ethers.utils.parseEther("585")).div(ePow21)
@@ -514,16 +514,16 @@ describe("Test stake functionality", async function() {
     it("Stake during two consecutive inactive cycle", async function() {
         await xenft.bulkClaimRank(32, 30)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
 
 
         await xenftAlice.bulkClaimRank(1, 1)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
 
         await xenftBob.bulkClaimRank(87, 50)
         await xenftBob.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactoryBob.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryBob.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
@@ -540,26 +540,26 @@ describe("Test stake functionality", async function() {
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
-        const totalEntryPow = await dbXeNFTFactory.totalPowerPerCycle(0)
+        const totalEntryPow = await dbXeNFTFactory.totalEntryPowerPerCycle(0)
         const firstCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(0)
 
-        const deployerEntryPow = await dbXeNFTFactory.tokenEntryPower(0)
+        const deployerEntryPow = await dbXeNFTFactory.dbxenftEntryPower(0)
         await dbXeNFTFactory.claimFees(0)
         expect(await dbXeNFTFactory.baseDBXeNFTPower(0)).to.equal(deployerEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const aliceEntryPow = await dbXeNFTFactory.tokenEntryPower(1)
+        const aliceEntryPow = await dbXeNFTFactory.dbxenftEntryPower(1)
         await dbXeNFTFactoryAlice.claimFees(1)
         const aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(1)
         expect(aliceBasePow).to.equal(aliceEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const bobEntryPow = await dbXeNFTFactory.tokenEntryPower(2)
+        const bobEntryPow = await dbXeNFTFactory.dbxenftEntryPower(2)
         await dbXeNFTFactoryBob.claimFees(2)
         const bobBasePow = await dbXeNFTFactory.baseDBXeNFTPower(2)
         expect(bobBasePow).to.equal(bobEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactory.burnNFT(10004, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10004, { value: ethers.utils.parseEther("1") })
 
         const ePow21 = ethers.utils.parseEther("1000")
         const aliceDBXeNFTPow = aliceBasePow.mul(ethers.utils.parseEther("99")).div(ePow21)
@@ -574,16 +574,16 @@ describe("Test stake functionality", async function() {
     it("Stake consecutively during active cycle then inactive cycle", async function() {
         await xenft.bulkClaimRank(77, 30)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
 
 
         await xenftAlice.bulkClaimRank(1, 100)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
 
         await xenftBob.bulkClaimRank(44, 45)
         await xenftBob.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactoryBob.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryBob.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryBob.stake(ethers.utils.parseEther("4"), 2, { value: ethers.utils.parseEther("1") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
@@ -597,26 +597,26 @@ describe("Test stake functionality", async function() {
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
-        const totalEntryPow = await dbXeNFTFactory.totalPowerPerCycle(0)
+        const totalEntryPow = await dbXeNFTFactory.totalEntryPowerPerCycle(0)
         const firstCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(0)
 
-        const deployerEntryPow = await dbXeNFTFactory.tokenEntryPower(0)
+        const deployerEntryPow = await dbXeNFTFactory.dbxenftEntryPower(0)
         await dbXeNFTFactory.claimFees(0)
         expect(await dbXeNFTFactory.baseDBXeNFTPower(0)).to.equal(deployerEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const aliceEntryPow = await dbXeNFTFactory.tokenEntryPower(1)
+        const aliceEntryPow = await dbXeNFTFactory.dbxenftEntryPower(1)
         await dbXeNFTFactoryAlice.claimFees(1)
         const aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(1)
         expect(aliceBasePow).to.equal(aliceEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
-        const bobEntryPow = await dbXeNFTFactory.tokenEntryPower(2)
+        const bobEntryPow = await dbXeNFTFactory.dbxenftEntryPower(2)
         await dbXeNFTFactoryBob.claimFees(2)
         const bobBasePow = await dbXeNFTFactory.baseDBXeNFTPower(2)
         expect(bobBasePow).to.equal(bobEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactory.burnNFT(10004, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10004, { value: ethers.utils.parseEther("1") })
 
         const ePow21 = ethers.utils.parseEther("1000")
         const aliceDBXeNFTPow = aliceBasePow.mul(ethers.utils.parseEther("99")).div(ePow21)
@@ -631,16 +631,16 @@ describe("Test stake functionality", async function() {
     it("Stake consecutively during inactive cycle then active cycle", async function() {
         await xenft.bulkClaimRank(7, 8)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
 
 
         await xenftAlice.bulkClaimRank(97, 3)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
 
         await xenftBob.bulkClaimRank(14, 29)
         await xenftBob.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactoryBob.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryBob.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
@@ -653,7 +653,7 @@ describe("Test stake functionality", async function() {
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactory.burnNFT(10004, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10004, { value: ethers.utils.parseEther("1") })
 
         await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("144"), 1, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryBob.stake(ethers.utils.parseEther("789"), 2, { value: ethers.utils.parseEther("1") })
@@ -663,12 +663,12 @@ describe("Test stake functionality", async function() {
 
         await xenft.bulkClaimRank(2, 2)
         await xenft.approve(dbXeNFTFactory.address, 10005)
-        await dbXeNFTFactory.burnNFT(10005, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10005, { value: ethers.utils.parseEther("1") })
 
-        const totalEntryPow = await dbXeNFTFactory.totalPowerPerCycle(0)
+        const totalEntryPow = await dbXeNFTFactory.totalEntryPowerPerCycle(0)
         const firstCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(0)
 
-        const deployerEntryPow = await dbXeNFTFactory.tokenEntryPower(0)
+        const deployerEntryPow = await dbXeNFTFactory.dbxenftEntryPower(0)
         await dbXeNFTFactory.claimFees(0)
         expect(await dbXeNFTFactory.baseDBXeNFTPower(0)).to.equal(deployerEntryPow.mul(firstCycleRewardPow).div(totalEntryPow))
 

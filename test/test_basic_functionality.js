@@ -79,7 +79,7 @@ describe("Test basic functionality", async function() {
 
         dbXeNFTFactory = await DBXeNFTFactory.deploy(DBX.address, xenft.address, XENContract.address);
         await dbXeNFTFactory.deployed();
-        const DBXeNFTAddress = await dbXeNFTFactory.DBXENFTInstance()
+        const DBXeNFTAddress = await dbXeNFTFactory.dbxenft()
         DBXeNFT = await ethers.getContractAt("DBXENFT", DBXeNFTAddress, deployer)
 
         dbXeNFTFactoryAlice = dbXeNFTFactory.connect(alice)
@@ -109,7 +109,7 @@ describe("Test basic functionality", async function() {
         expect(contractBalanceBeforeBurn).to.equal("0");
         await xenft.bulkClaimRank(128, 71)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
         let contractBalanceAfterBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         expect(contractBalanceAfterBurn).to.be.greaterThan("0");
         let cycle0Reward = await dbXeNFTFactory.rewardPerCycle(0);
@@ -120,7 +120,7 @@ describe("Test basic functionality", async function() {
 
         await xenftAlice.bulkClaimRank(64, 7)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
 
         let cycle1Reward = await dbXeNFTFactory.rewardPerCycle(1);
         expect(cycle1Reward).to.equal(ethers.utils.parseEther("10100"));
@@ -130,7 +130,7 @@ describe("Test basic functionality", async function() {
 
         await xenftBob.bulkClaimRank(100, 100)
         await xenftBob.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactoryBob.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryBob.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
 
         let cycle2Reward = await dbXeNFTFactory.rewardPerCycle(2);
         expect(cycle2Reward).to.equal(ethers.utils.parseEther("10201"));
@@ -140,7 +140,7 @@ describe("Test basic functionality", async function() {
 
         await xenftCarol.bulkClaimRank(32, 100)
         await xenftCarol.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactoryCarol.burnNFT(10004, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryCarol.mintDBXENFT(10004, { value: ethers.utils.parseEther("1") })
 
         let cycle3Reward = await dbXeNFTFactory.rewardPerCycle(3);
         expect(cycle3Reward).to.equal(ethers.utils.parseEther("10303.01"));
@@ -150,7 +150,7 @@ describe("Test basic functionality", async function() {
 
         await xenftCarol.bulkClaimRank(77, 100)
         await xenftCarol.approve(dbXeNFTFactory.address, 10005)
-        await dbXeNFTFactoryCarol.burnNFT(10005, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryCarol.mintDBXENFT(10005, { value: ethers.utils.parseEther("1") })
 
         let cycle4Reward = await dbXeNFTFactory.rewardPerCycle(4);
         expect(cycle4Reward).to.equal(ethers.utils.parseEther("10406.0401"));
@@ -160,7 +160,7 @@ describe("Test basic functionality", async function() {
         let contractBalanceBeforeBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
         let contractBalanceAfterBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         expect(contractBalanceAfterBurn).to.be.greaterThan("0");
         //MIN cost, term 1, numbers of vms 1
@@ -168,7 +168,7 @@ describe("Test basic functionality", async function() {
 
         await xenftAlice.bulkClaimRank(1, 1)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") });
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") });
         //MIN cost, term 1, numbers of vms 1
         expect(await ethers.provider.getBalance(dbXeNFTFactory.address)).to.equal(contractBalanceAfterBurn.add(ethers.utils.parseEther("0.001")));
 
@@ -177,13 +177,13 @@ describe("Test basic functionality", async function() {
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactory.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
         let contractBalanceInSecondCycleAfterFirstBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         expect(contractBalanceInSecondCycleAfterFirstBurn).to.equal(ethers.utils.parseEther("0.003"));
 
         await xenftAlice.bulkClaimRank(1, 1)
         await xenftAlice.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactoryAlice.burnNFT(10004, { value: ethers.utils.parseEther("1") });
+        await dbXeNFTFactoryAlice.mintDBXENFT(10004, { value: ethers.utils.parseEther("1") });
         let contractBalanceInSecondCycleAfterSecondBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         expect(contractBalanceInSecondCycleAfterSecondBurn).to.equal(ethers.utils.parseEther("0.004"));
 
@@ -213,7 +213,7 @@ describe("Test basic functionality", async function() {
         let contractBalanceBeforeBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
         let contractBalanceAfterBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         expect(contractBalanceAfterBurn).to.be.greaterThan("0");
         //MIN cost, term 1, numbers of vms 1
@@ -221,7 +221,7 @@ describe("Test basic functionality", async function() {
 
         await xenftAlice.bulkClaimRank(1, 1)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") });
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") });
         let contractBalanceAfterSecondBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         expect(contractBalanceAfterSecondBurn).to.equal(contractBalanceAfterBurn.add(ethers.utils.parseEther("0.001")));
         await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1000"), 1, { value: ethers.utils.parseEther("1") });
@@ -238,13 +238,13 @@ describe("Test basic functionality", async function() {
         let contractBalanceAfterSecondStake = await ethers.provider.getBalance(dbXeNFTFactory.address);
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactory.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
         let contractBalanceAfterThirdBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         expect(contractBalanceAfterThirdBurn).to.equal(contractBalanceAfterSecondStake.add(ethers.utils.parseEther("0.001")));
 
         await xenftAlice.bulkClaimRank(1, 1)
         await xenftAlice.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactoryAlice.burnNFT(10004, { value: ethers.utils.parseEther("1") });
+        await dbXeNFTFactoryAlice.mintDBXENFT(10004, { value: ethers.utils.parseEther("1") });
         let contractBalanceAfterForthBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         expect(contractBalanceAfterForthBurn).to.equal(contractBalanceAfterThirdBurn.add(ethers.utils.parseEther("0.001")));
 
@@ -255,29 +255,23 @@ describe("Test basic functionality", async function() {
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10005)
-        await dbXeNFTFactory.burnNFT(10005, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10005, { value: ethers.utils.parseEther("1") })
 
         await xenftAlice.bulkClaimRank(1, 1)
         await xenftAlice.approve(dbXeNFTFactory.address, 10006)
-        await dbXeNFTFactoryAlice.burnNFT(10006, { value: ethers.utils.parseEther("1") });
+        await dbXeNFTFactoryAlice.mintDBXENFT(10006, { value: ethers.utils.parseEther("1") });
 
-        expect(await dbXeNFTFactory.dxnExtraEntryPower(0)).to.equal("0");
-        expect(await dbXeNFTFactory.dxnExtraEntryPower(1)).to.be.greaterThan("0")
-        expect(await dbXeNFTFactory.dxnExtraEntryPower(2)).to.equal("0");
-        expect(await dbXeNFTFactory.dxnExtraEntryPower(3)).to.equal("0");
-        let nftId0EntryPower = await dbXeNFTFactory.tokenEntryPower(0);
-        let nftId1EntryPower = await dbXeNFTFactory.tokenEntryPower(1);
-        let nftId2EntryPower = await dbXeNFTFactory.tokenEntryPower(2);
-        let nftId3EntryPower = await dbXeNFTFactory.tokenEntryPower(3);
-        let stakeExtraPower = await dbXeNFTFactory.dxnExtraEntryPower(1);
+        let nftId0EntryPower = await dbXeNFTFactory.dbxenftEntryPower(0);
+        let nftId1EntryPower = await dbXeNFTFactory.dbxenftEntryPower(1);
+        let nftId2EntryPower = await dbXeNFTFactory.dbxenftEntryPower(2);
+        let nftId3EntryPower = await dbXeNFTFactory.dbxenftEntryPower(3);
 
         let extraPowerFor1 = nftId1EntryPower.mul(ethers.utils.parseEther("1000")).div(ethers.utils.parseEther("100"));
-        expect(extraPowerFor1).to.equal(stakeExtraPower);
 
         expect(await dbXeNFTFactory.totalExtraEntryPower(0)).to.equal(extraPowerFor1);
         expect(await dbXeNFTFactory.totalExtraEntryPower(1)).to.equal("0");
-        expect(await dbXeNFTFactory.totalPowerPerCycle(0)).to.equal(nftId0EntryPower.add(nftId1EntryPower));
-        expect(await dbXeNFTFactory.totalPowerPerCycle(1)).to.equal(nftId2EntryPower.add(nftId3EntryPower));
+        expect(await dbXeNFTFactory.totalEntryPowerPerCycle(0)).to.equal(nftId0EntryPower.add(nftId1EntryPower));
+        expect(await dbXeNFTFactory.totalEntryPowerPerCycle(1)).to.equal(nftId2EntryPower.add(nftId3EntryPower));
 
         let deployerBalance = await ethers.provider.getBalance(dbXeNFTFactory.address);
         let aliceBalance = await ethers.provider.getBalance(dbXeNFTFactory.address);
@@ -285,7 +279,7 @@ describe("Test basic functionality", async function() {
         await dbXeNFTFactoryAlice.claimFees(1);
         let deployerBalanceAfter = await ethers.provider.getBalance(deployer.address);
         let aliceBalanceAfter = await ethers.provider.getBalance(alice.address);
-        expect(await dbXeNFTFactory.totalPowerPerCycle(0));
+        expect(await dbXeNFTFactory.totalEntryPowerPerCycle(0));
     })
 
     it("Test power distribution", async function() {
@@ -293,7 +287,7 @@ describe("Test basic functionality", async function() {
         let contractBalanceBeforeBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
         let contractBalanceAfterBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         expect(contractBalanceAfterBurn).to.be.greaterThan("0");
         //MIN cost, term 1, numbers of vms 1
@@ -301,7 +295,7 @@ describe("Test basic functionality", async function() {
 
         await xenftAlice.bulkClaimRank(1, 1)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") });
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") });
         let contractBalanceAfterSecondBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         //MIN cost, term 1, numbers of vms 1
         expect(await dbXeNFTFactory.getCurrentCycle()).to.equal(0);
@@ -315,11 +309,11 @@ describe("Test basic functionality", async function() {
         //Cycle 2
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactory.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
 
         await xenftAlice.bulkClaimRank(1, 1)
         await xenftAlice.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactoryAlice.burnNFT(10004, { value: ethers.utils.parseEther("1") });
+        await dbXeNFTFactoryAlice.mintDBXENFT(10004, { value: ethers.utils.parseEther("1") });
 
         let increseValue = rewardCycle0 * 0.01;
         let rewardCycle1 = rewardCycle0.add(BigNumber.from(increseValue.toString()));

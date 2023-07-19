@@ -79,7 +79,7 @@ describe("Test fee claiming functionality", async function() {
 
         dbXeNFTFactory = await DBXeNFTFactory.deploy(DBX.address, xenft.address, XENContract.address);
         await dbXeNFTFactory.deployed();
-        const DBXeNFTAddress = await dbXeNFTFactory.DBXENFTInstance()
+        const DBXeNFTAddress = await dbXeNFTFactory.dbxenft()
         DBXeNFT = await ethers.getContractAt("DBXENFT", DBXeNFTAddress, deployer)
 
         dbXeNFTFactoryAlice = dbXeNFTFactory.connect(alice)
@@ -107,21 +107,21 @@ describe("Test fee claiming functionality", async function() {
     it("Basic fee claiming for entry cycle", async function() {
         await xenft.bulkClaimRank(128, 1)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
 
 
         await xenftAlice.bulkClaimRank(64, 7)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
 
 
         await xenftBob.bulkClaimRank(100, 100)
         await xenftBob.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactoryBob.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryBob.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
 
         await xenftCarol.bulkClaimRank(32, 100)
         await xenftCarol.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactoryCarol.burnNFT(10004, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryCarol.mintDBXENFT(10004, { value: ethers.utils.parseEther("1") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
@@ -175,12 +175,12 @@ describe("Test fee claiming functionality", async function() {
     it("Only fees claimed starting the next cycle after stake will be impacted by extra stake power", async function() {
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
 
 
         await xenftAlice.bulkClaimRank(1, 1)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1000"), 1, { value: ethers.utils.parseEther("1") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
@@ -214,7 +214,7 @@ describe("Test fee claiming functionality", async function() {
 
         await xenftBob.bulkClaimRank(100, 100)
         await xenftBob.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactoryBob.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryBob.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
@@ -248,7 +248,7 @@ describe("Test fee claiming functionality", async function() {
             return el.event == "FeesClaimed"
         })
         aliceFeesClaimed = aliceFeesClaimedEvent.args.fees
-        aliceDBXeNFTPow = await dbXeNFTFactory.DBXeNFTPower(1)
+        aliceDBXeNFTPow = await dbXeNFTFactory.dbxenftPower(1)
         expect(aliceFeesClaimed).to.equal(aliceDBXeNFTPow.mul(secondCycleAccruedFees).div(totalPowSecondCycle))
 
 
@@ -261,11 +261,11 @@ describe("Test fee claiming functionality", async function() {
     it("Staking in entry cycle results in correct fees calculation", async function() {
         await xenft.bulkClaimRank(20, 10)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
 
         await xenftAlice.bulkClaimRank(10, 20)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("5000"), 1, { value: ethers.utils.parseEther("5") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
@@ -273,11 +273,11 @@ describe("Test fee claiming functionality", async function() {
 
         await xenft.bulkClaimRank(45, 88)
         await xenft.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactory.burnNFT(10003, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
 
         await xenftBob.bulkClaimRank(60, 90)
         await xenftBob.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactoryBob.burnNFT(10004, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryBob.mintDBXENFT(10004, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryBob.stake(ethers.utils.parseEther("11"), 3, { value: ethers.utils.parseEther("1") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
@@ -285,14 +285,14 @@ describe("Test fee claiming functionality", async function() {
 
         await xenft.bulkClaimRank(100, 100)
         await xenft.approve(dbXeNFTFactory.address, 10005)
-        await dbXeNFTFactory.burnNFT(10005, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10005, { value: ethers.utils.parseEther("1") })
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10006)
-        await dbXeNFTFactory.burnNFT(10006, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.mintDBXENFT(10006, { value: ethers.utils.parseEther("1") })
 
         const firstCycleRewardPow = await dbXeNFTFactory.rewardPerCycle(0)
         const firstCycleAccruedFees = await dbXeNFTFactory.cycleAccruedFees(0)
@@ -347,7 +347,7 @@ describe("Test fee claiming functionality", async function() {
         })
         let aliceFeesClaimed = aliceFeesClaimedEvent.args.fees
         let aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(1)
-        let aliceDBXeNFTPow = await dbXeNFTFactory.DBXeNFTPower(1)
+        let aliceDBXeNFTPow = await dbXeNFTFactory.dbxenftPower(1)
         let aliceExtraPow = aliceDBXeNFTPow.sub(aliceBasePow)
         let aliceEntryCycleFees = aliceBasePow.mul(firstCycleAccruedFees).div(firstCycleRewardPow)
         let aliceRestFeesClaimed = aliceDBXeNFTPow.mul(cfpss3.sub(cfpss1)).div(scalingFactor)
@@ -368,7 +368,7 @@ describe("Test fee claiming functionality", async function() {
         })
         const bobClaimedFees = bobFeesClaimedEvent.args.fees
         const bobBasePow = await dbXeNFTFactory.baseDBXeNFTPower(3)
-        let bobDBXeNFTPow = await dbXeNFTFactory.DBXeNFTPower(3)
+        let bobDBXeNFTPow = await dbXeNFTFactory.dbxenftPower(3)
         let bobExtraPow = bobDBXeNFTPow.sub(bobBasePow)
         let bobEntryCycleFees = bobBasePow.mul(secondCycleAccruedFees).
         div(firstCycleRewardPow.add(secondCycleRewardPow).add(aliceExtraPow))
