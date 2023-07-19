@@ -305,11 +305,9 @@ contract DBXeNFTFactory is ReentrancyGuard {
             tokenWithdrawableStake[tokenId] > 0,
             "DBXeNFT: No withdrawable DXN available."
         );
-
         uint256 powerDecrease = calcExtraPower(baseDBXeNFTPower[tokenId], amount);
         tokenWithdrawableStake[tokenId] -= amount;
         DBXeNFTPower[tokenId] -= powerDecrease;
-
         if (lastStartedCycle == currentStartedCycle) {
             pendingStakeWithdrawal += powerDecrease;
         } else {
@@ -324,7 +322,6 @@ contract DBXeNFTFactory is ReentrancyGuard {
         updateCycleFeesPerStakeSummed();
         updateDBXeNFT(tokenId);
         uint256 fees = tokenAccruedFees[tokenId];
-        console.log("CLAIM FEE FROM CONTRACT !",fees);
         require(fees > 0, "dbXENFT: amount is zero");
         tokenAccruedFees[tokenId] = 0;
         sendViaCall(payable(msg.sender), fees);
