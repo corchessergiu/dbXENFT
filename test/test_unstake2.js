@@ -4,7 +4,7 @@ const { ethers } = require("hardhat");
 
 describe("Test unstake functionality", async function() {
     let xenft, dbXeNFTFactory, XENContract, DBX, DBXeNFT;
-    let alice, bob, carol, dean;
+    let deployer, alice, bob, carol, dean;
     let dbXeNFTFactoryAlice, dbXeNFTFactoryBob, dbXeNFTFactoryCarol, dbXeNFTFactoryDean
     let xenftAlice, xenftBob, xenftCarol, xenftDean
     beforeEach("Set enviroment", async() => {
@@ -107,15 +107,22 @@ describe("Test unstake functionality", async function() {
     });
 
     it("Basic unstake case", async function() {
+        let aliceDBXBalance = await DBX.balanceOf(alice.address);
+        let bobDBXBalance = await DBX.balanceOf(bob.address);
+
         await xenft.bulkClaimRank(13, 37)
         await xenft.approve(dbXeNFTFactory.address, 10001)
         await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactory.stake(ethers.utils.parseEther("2"), 0, { value: ethers.utils.parseEther("5") })
 
+        expect(aliceDBXBalance).to.equal(ethers.utils.parseEther("10000"));
         await xenftAlice.bulkClaimRank(49, 77)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
         await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("233"), 1, { value: ethers.utils.parseEther("5") })
+
+        let aliceDBXBalanceAfterFirstStake = await DBX.balanceOf(alice.address);
+        expect(aliceDBXBalanceAfterFirstStake).to.equal(ethers.utils.parseEther("10000").sub(ethers.utils.parseEther("233")));
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
@@ -125,41 +132,95 @@ describe("Test unstake functionality", async function() {
         await dbXeNFTFactoryBob.mintDBXENFT(10003, { value: ethers.utils.parseEther("1") })
         await dbXeNFTFactoryBob.stake(ethers.utils.parseEther("21"), 2, { value: ethers.utils.parseEther("5") })
 
+        let bobDBXBalanceAfterFirstStake = await DBX.balanceOf(bob.address);
+        expect(bobDBXBalanceAfterFirstStake).to.equal(ethers.utils.parseEther("10000").sub(ethers.utils.parseEther("21")));
+
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
         await dbXeNFTFactory.stake(ethers.utils.parseEther("1"), 0, { value: ethers.utils.parseEther("5") })
-        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1"), 1, { value: ethers.utils.parseEther("5") })
+        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("100"), 1, { value: ethers.utils.parseEther("5") })
 
-        let withdrawableToken0 = await dbXeNFTFactory.tokenWithdrawableStake(0);
-        let withdrawableToken1 = await dbXeNFTFactory.tokenWithdrawableStake(1);
+        let withdrawableToken0 = await dbXeNFTFactory.dbxenftWithdrawableStake(0);
+        let withdrawableToken1 = await dbXeNFTFactory.dbxenftWithdrawableStake(1);
         expect(withdrawableToken0).to.equal(ethers.utils.parseEther("2"));
         expect(withdrawableToken1).to.equal(ethers.utils.parseEther("233"));
 
-        let aliceBalanceBeforeFirstUnstake = await ethers.provider.getBalance(alice.address);
-        await dbXeNFTFactoryAlice.unstake(1, ethers.utils.parseEther("22222"));
-        let aliceBalanceBeforeAfterFirstUnstake = await ethers.provider.getBalance(alice.address);
-
-        console.log(aliceBalanceBeforeFirstUnstake);
-        console.log(aliceBalanceBeforeAfterFirstUnstake);
-
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
-            // await dbXeNFTFactoryAlice.unstake(1, ethers.utils.parseEther("233"))
-            // expect(await dbXeNFTFactory.summedCycleStakes(2)).to.equal(
-            //     (await dbXeNFTFactory.rewardPerCycle(0))
-            //     .add(await dbXeNFTFactory.rewardPerCycle(1))
-            //     .add(await dbXeNFTFactory.rewardPerCycle(2))
-            // )
 
-        // await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
-        // await hre.ethers.provider.send("evm_mine")
+        let aliceBalanceBeforeFirstUnstake = await DBX.balanceOf(alice.address);
+        await dbXeNFTFactoryAlice.unstake(1, ethers.utils.parseEther("222"));
+        let aliceBalanceAfterFirstUnstake = await DBX.balanceOf(alice.address);
 
-        // await xenft.bulkClaimRank(1, 1)
-        // await xenft.approve(dbXeNFTFactory.address, 10005)
-        // await dbXeNFTFactory.mintDBXENFT(10005, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1"), 1, { value: ethers.utils.parseEther("5") })
 
-        // expect(await dbXeNFTFactory.tokenWithdrawableStake(1)).to.equal(0)
+        expect(aliceBalanceAfterFirstUnstake).to.equal(aliceBalanceBeforeFirstUnstake.add(ethers.utils.parseEther("222")));
+        expect(await dbXeNFTFactory.dbxenftWithdrawableStake(1)).to.equal(ethers.utils.parseEther("11"));
 
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
+        await hre.ethers.provider.send("evm_mine");
+
+        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1"), 1, { value: ethers.utils.parseEther("5") })
+
+        let withdrawableToken1Alice = await dbXeNFTFactory.dbxenftWithdrawableStake(1);
+        expect(withdrawableToken1Alice).to.equal(ethers.utils.parseEther("11"));
+
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
+        await hre.ethers.provider.send("evm_mine");
+
+        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1"), 1, { value: ethers.utils.parseEther("5") })
+        let withdrawableToken1Alice2 = await dbXeNFTFactory.dbxenftWithdrawableStake(1);
     })
+
+    it("Unstake with gap cycle", async function() {
+        let aliceDBXBalance = await DBX.balanceOf(alice.address);
+        let bobDBXBalance = await DBX.balanceOf(bob.address);
+
+        await xenft.bulkClaimRank(13, 37)
+        await xenft.approve(dbXeNFTFactory.address, 10001)
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactory.stake(ethers.utils.parseEther("2"), 0, { value: ethers.utils.parseEther("5") })
+
+        expect(aliceDBXBalance).to.equal(ethers.utils.parseEther("10000"));
+        await xenftAlice.bulkClaimRank(49, 77)
+        await xenftAlice.approve(dbXeNFTFactory.address, 10002)
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, { value: ethers.utils.parseEther("1") })
+        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("233"), 1, { value: ethers.utils.parseEther("5") })
+
+        let aliceDBXBalanceAfterFirstStake = await DBX.balanceOf(alice.address);
+        expect(aliceDBXBalanceAfterFirstStake).to.equal(ethers.utils.parseEther("10000").sub(ethers.utils.parseEther("233")));
+
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
+        await hre.ethers.provider.send("evm_mine");
+
+        await dbXeNFTFactory.stake(ethers.utils.parseEther("1"), 0, { value: ethers.utils.parseEther("5") })
+        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1"), 1, { value: ethers.utils.parseEther("5") })
+
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 2 * 24])
+        await hre.ethers.provider.send("evm_mine");
+
+        await dbXeNFTFactory.stake(ethers.utils.parseEther("1"), 0, { value: ethers.utils.parseEther("5") })
+        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1"), 1, { value: ethers.utils.parseEther("5") })
+
+        expect(await dbXeNFTFactory.dbxenftWithdrawableStake(0)).to.equal(ethers.utils.parseEther("3"));
+        expect(await dbXeNFTFactory.dbxenftWithdrawableStake(1)).to.equal(ethers.utils.parseEther("234"));
+
+        await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 3 * 24])
+        await hre.ethers.provider.send("evm_mine");
+
+        expect(await dbXeNFTFactory.dbxenftWithdrawableStake(0)).to.equal(ethers.utils.parseEther("3"));
+        expect(await dbXeNFTFactory.dbxenftWithdrawableStake(1)).to.equal(ethers.utils.parseEther("234"));
+
+        let aliceBalanceBeforeFirstUnstake = await DBX.balanceOf(alice.address);
+        await dbXeNFTFactoryAlice.unstake(1, ethers.utils.parseEther("111"));
+        let aliceBalanceAfterFirstUnstake = await DBX.balanceOf(alice.address);
+        expect(aliceBalanceAfterFirstUnstake).to.equal(aliceBalanceBeforeFirstUnstake.add(ethers.utils.parseEther("111")));
+
+        let deployerBalanceBeforeFirstUnstake = await DBX.balanceOf(deployer.address);
+        await dbXeNFTFactory.unstake(0, ethers.utils.parseEther("1"));
+        let deployerBalanceAfterFirstUnstake = await DBX.balanceOf(deployer.address);
+        expect(deployerBalanceAfterFirstUnstake).to.equal(deployerBalanceBeforeFirstUnstake.add(ethers.utils.parseEther("1")));
+    })
+
 })
