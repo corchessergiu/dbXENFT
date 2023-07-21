@@ -9,6 +9,7 @@ import "./interfaces/IXENCrypto.sol";
 import "./interfaces/IXENFT.sol";
 import "./libs/MintInfo.sol";
 import "./DBXENFT.sol";
+import "hardhat/console.sol";
 
 contract DBXeNFTFactory is ReentrancyGuard {
     using MintInfo for uint256;
@@ -562,11 +563,13 @@ contract DBXeNFTFactory is ReentrancyGuard {
         if(block.timestamp < maturityTs) {
             daysTillClaim = ((maturityTs - block.timestamp) / SECONDS_IN_DAY);
             daysSinceMinted = term - daysTillClaim;
+            console.log("daysSinceMinted", daysSinceMinted);
         } else {
             daysTillClaim = 0;
             daysSinceMinted =
                 ((term * SECONDS_IN_DAY + (block.timestamp - maturityTs))) /
                 SECONDS_IN_DAY;
+                console.log("daysSinceMinted ",daysSinceMinted);
         }
 
         if (daysSinceMinted > daysTillClaim) {
@@ -630,19 +633,29 @@ contract DBXeNFTFactory is ReentrancyGuard {
      * @param term term attribute of XENFT
      * @param maturityTs maturity timestamp of XENFT
      */
+
+    //ProtocolFee = MAX( (Xen*MAX( 1-0.0011389 * MAX(MaturityDays,0) , 0.5) )/BaseXen), MinCost)
     function _calculateFee(
         uint256 userReward,
         uint256 maturityTs,
         uint256 term
     ) private view returns (uint256 burnFee) {
         uint256 maturityDays = calcMaturityDays(term, maturityTs);
+        console.log("maturityDays ",maturityDays);
         uint256 maxDays = Math.max(maturityDays, 0);
+        console.log("maxDays ",maxDays);
         uint256 daysReduction = 11389 * maxDays;
+        console.log("daysReduction ",daysReduction);
         uint256 maxSubtrahend = Math.min(daysReduction, 5_000_000);
+        console.log("maxSubtrahend ",maxSubtrahend);
         uint256 difference = MAX_BPS - maxSubtrahend;
+        console.log("difference ",difference);
         uint256 maxPctReduction = Math.max(difference, 5_000_000);
+        console.log("maxPctReduction ",maxPctReduction);
         uint256 xenMulReduction = Math.mulDiv(userReward, maxPctReduction, MAX_BPS);
+        console.log("xenMulReduction ",xenMulReduction);
         burnFee = Math.max(1e15, xenMulReduction / BASE_XEN);
+        console.log("burnFee ",burnFee);
     }
 
     /**
