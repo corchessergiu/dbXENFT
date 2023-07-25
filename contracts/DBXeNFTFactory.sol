@@ -365,6 +365,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
                 term
             );
         }
+        console.log("AM FEE ", fee," pentru tokenid ul ",xenftId);
         require(msg.value >= fee, "Payment less than fee");
 
         uint256 dbxenftId = dbxenft.mintDBXENFT(msg.sender);
@@ -477,9 +478,11 @@ contract DBXeNFTFactory is ReentrancyGuard {
             uint256 extraPower = calcExtraPower(amount, tokenEntryPowerMem);
             dbxenftEntryPowerWithStake[currentStartedCycleMem] += tokenEntryPowerMem;
             totalExtraEntryPower[currentStartedCycleMem] += extraPower;
+             console.log("AM EXTRA POWER PE PRIMA",extraPower);
         } else {
             uint256 extraPower = calcExtraPower(baseDBXeNFTPower[tokenId], amount);
             pendingPower += extraPower;
+            console.log("AM EXTRA POWER HERE ",extraPower);
         }
 
         dxn.safeTransferFrom(msg.sender, address(this), amount);
@@ -538,6 +541,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
         updateDBXeNFT(tokenId);
 
         uint256 fees = dbxenftAccruedFees[tokenId];
+        console.log("NFT ID AND FEE ",tokenId, " ",fees);
         require(fees > 0, "dbXENFT: amount is zero");
         dbxenftAccruedFees[tokenId] = 0;
 
@@ -563,13 +567,11 @@ contract DBXeNFTFactory is ReentrancyGuard {
         if(block.timestamp < maturityTs) {
             daysTillClaim = ((maturityTs - block.timestamp) / SECONDS_IN_DAY);
             daysSinceMinted = term - daysTillClaim;
-            console.log("daysSinceMinted", daysSinceMinted);
         } else {
             daysTillClaim = 0;
             daysSinceMinted =
                 ((term * SECONDS_IN_DAY + (block.timestamp - maturityTs))) /
                 SECONDS_IN_DAY;
-                console.log("daysSinceMinted ",daysSinceMinted);
         }
 
         if (daysSinceMinted > daysTillClaim) {
@@ -641,21 +643,13 @@ contract DBXeNFTFactory is ReentrancyGuard {
         uint256 term
     ) private view returns (uint256 burnFee) {
         uint256 maturityDays = calcMaturityDays(term, maturityTs);
-        console.log("maturityDays ",maturityDays);
         uint256 maxDays = Math.max(maturityDays, 0);
-        console.log("maxDays ",maxDays);
         uint256 daysReduction = 11389 * maxDays;
-        console.log("daysReduction ",daysReduction);
         uint256 maxSubtrahend = Math.min(daysReduction, 5_000_000);
-        console.log("maxSubtrahend ",maxSubtrahend);
         uint256 difference = MAX_BPS - maxSubtrahend;
-        console.log("difference ",difference);
         uint256 maxPctReduction = Math.max(difference, 5_000_000);
-        console.log("maxPctReduction ",maxPctReduction);
         uint256 xenMulReduction = Math.mulDiv(userReward, maxPctReduction, MAX_BPS);
-        console.log("xenMulReduction ",xenMulReduction);
         burnFee = Math.max(1e15, xenMulReduction / BASE_XEN);
-        console.log("burnFee ",burnFee);
     }
 
     /**
@@ -786,6 +780,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
                 
             }
 
+            console.log("PENDIG POWER ", pendingPower);
             if(pendingPower != 0) {
                 summedCyclePowers[currentCycleMemory] += pendingPower;
                 pendingPower = 0;

@@ -202,7 +202,7 @@ describe("Test stake functionality", async function() {
         await dbXeNFTFactoryAlice.mintDBXENFT(10008, { value: ethers.utils.parseEther("1") })
     })
 
-    it.only("Test protocol fee for NFT with burn amount!", async function() {
+    it("Test protocol fee for NFT with burn amount!", async function() {
         await XENContract.approve(xenft.address, ethers.utils.parseEther("100000000000000000"))
         await xenft.bulkClaimRank(128, 1);
         await xenft.bulkClaimRank(128, 1);
