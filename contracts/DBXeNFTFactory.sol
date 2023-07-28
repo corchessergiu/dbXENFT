@@ -194,13 +194,13 @@ contract DBXeNFTFactory is ReentrancyGuard {
     /**
      * DXN amount a DBXENFT has staked and is locked during given cycle.
      */
-    mapping(uint256 => mapping(uint256 => uint256)) dbxenftStakeCycle;
+    mapping(uint256 => mapping(uint256 => uint256)) public dbxenftStakeCycle;
 
     /**
      * Pending staked DXN helper variable used for
      * updating DBXENFT with the corresponding power.
      */
-    mapping(uint256 => uint256) pendingDXN;
+    mapping(uint256 => uint256) public pendingDXN;
 
     /**
      * DXN amount a DBXENFT has staked and is locked during given cycle.
@@ -457,6 +457,11 @@ contract DBXeNFTFactory is ReentrancyGuard {
         }
 
         uint256 cycleToSet = currentCycleMem + 1;
+
+        if (lastStartedCycle == currentStartedCycle) {
+            cycleToSet = lastStartedCycle + 1;
+        }
+
         if (
             (cycleToSet != dbxenftFirstStake[tokenId] &&
                 cycleToSet != dbxenftSecondStake[tokenId])
