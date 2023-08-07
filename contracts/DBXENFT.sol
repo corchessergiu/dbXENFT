@@ -1,20 +1,191 @@
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "operator-filter-registry/src/DefaultOperatorFilterer.sol";
 
-contract DBXENFT is ERC721 {
+contract DBXENFT is
+    ERC721Enumerable,
+    ERC721Burnable,
+    AccessControl,
+    ReentrancyGuard,
+    DefaultOperatorFilterer
+{
+    using Strings for uint256;
     address public immutable factory;
-    uint256 currentTokenId;
+    uint256 currentTokenId = 1;
 
-    constructor() ERC721("DBXEN NFT", "DBXENFT"){
+    address public ADMIN_ADDRESS = 0xa907b9Ad914Be4E2E0AD5B5feCd3c6caD959ee5A;
+    
+    /**
+     * @dev Prefix for tokens metadata URIs
+     */
+    string public baseURI;
+
+    // Sufix for tokens metadata URIs
+    string public baseExtension = ".json";
+
+    constructor() ERC721("DBXEN NFT", "DBXENFT") {
         factory = msg.sender;
     }
 
-    function mintDBXENFT(address _to) external returns(uint256 tokenId){
-        require(msg.sender == factory, "Only factory can mint");
+    function mintDBXENFT(
+        address _to
+    ) external nonReentrant returns (uint256 tokenId) {
+        require(msg.sender == factory, "DBXENFT: Only factory can mint");
         _safeMint(_to, currentTokenId);
         tokenId = currentTokenId;
         currentTokenId++;
         return tokenId;
     }
-} 
+
+    /**
+     * @dev Returns the current base URI.
+     * @return The base URI of the contract.
+     */
+    function _baseURI() internal view virtual override returns (string memory) {
+        return baseURI;
+    }
+
+    /**
+     * @dev This function sets the base URI of the NFT contract.
+     * @param uri The new base URI of the NFT contract.
+     * @notice Only the contract owner can call this function.
+     */
+    function setBasedURI(string memory uri) external {
+        require(msg.sender == ADMIN_ADDRESS,"DBXENFT: Only admin can set baseURI!");
+        baseURI = uri;
+    }
+
+    /**
+     * @dev Returns the token URI for the given token ID. Throws if the token ID does not exist
+     * @param tokenId The token ID to retrieve the URI for
+     * @notice Retrieve the URI for the given token ID
+     * @return The token URI for the given token ID
+     */
+    function tokenURI(
+        uint256 tokenId
+    ) public view virtual override returns (string memory) {
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: URI query for nonexistent token"
+        );
+
+        string memory currentBaseURI = _baseURI();
+        return
+            bytes(currentBaseURI).length > 0
+                ? string(
+                    abi.encodePacked(
+                        currentBaseURI,
+                        tokenId.toString(),
+                        baseExtension
+                    )
+                )
+                : "";
+    }
+
+    /**
+     * Changes the base extension for token metadata
+     *
+     * Access: only the admin account
+     *
+     * @param _newBaseExtension new value
+     */
+    function setBaseExtension(
+        string memory _newBaseExtension
+    ) public {
+       require(msg.sender == ADMIN_ADDRESS, "DBXENFT: Only admin set baseExtension!");
+        baseExtension = _newBaseExtension;
+    }
+
+     /**
+     * Changes admin address
+     *
+     * Access: only the addmin account
+     *
+     * @param _newAdminAddress new value
+     */
+    function setAdminAddress(
+        address  _newAdminAddress
+    ) public {
+       require(msg.sender == ADMIN_ADDRESS, "DBXENFT: Only addmin can set new address!");
+        ADMIN_ADDRESS = _newAdminAddress;
+    }
+
+
+    /**
+     * Returns the complete metadata URI for the given tokenId.
+     */
+    function walletOfOwner(
+        address _owner
+    ) public view returns (uint256[] memory) {
+        uint256 ownerTokenCount = balanceOf(_owner);
+        uint256[] memory tokenIds = new uint256[](ownerTokenCount);
+        for (uint256 i; i < ownerTokenCount; i++) {
+            tokenIds[i] = tokenOfOwnerByIndex(_owner, i);
+        }
+        return tokenIds;
+    }
+
+    function _burn(uint256 tokenId) internal virtual override(ERC721) {
+        super._burn(tokenId);
+    }
+
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 firstTokenId,
+        uint256 batchSize
+    ) internal virtual override(ERC721, ERC721Enumerable) {
+        super._beforeTokenTransfer(from, to, firstTokenId, batchSize);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(ERC721, ERC721Enumerable, AccessControl) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
+
+    // OVERRIDING ERC-721 IMPLEMENTATION TO ALLOW OPENSEA ROYALTIES ENFORCEMENT PROTOCOL
+
+    function setApprovalForAll(
+        address operator,
+        bool approved
+    ) public override(ERC721, IERC721) onlyAllowedOperatorApproval(operator) {
+        super.setApprovalForAll(operator, approved);
+    }
+
+    function approve(
+        address operator,
+        uint256 tokenId
+    ) public override(ERC721, IERC721) onlyAllowedOperatorApproval(operator) {
+        super.approve(operator, tokenId);
+    }
+
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public override(ERC721, IERC721) onlyAllowedOperator(from) {
+        super.transferFrom(from, to, tokenId);
+    }
+
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public override(ERC721, IERC721) onlyAllowedOperator(from) {
+        super.safeTransferFrom(from, to, tokenId);
+    }
+
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) public override(ERC721, IERC721) onlyAllowedOperator(from) {
+        super.safeTransferFrom(from, to, tokenId, data);
+    }
+}
