@@ -478,7 +478,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
 
         uint256 currentStartedCycleMem = currentStartedCycle;
         if(baseDBXeNFTPower[tokenId] == 0){
-            uint256 extraPower = calcExtraPower(amount, tokenEntryPowerMem);
+            uint256 extraPower = calcExtraPower(tokenEntryPowerMem,amount);
             dbxenftEntryPowerWithStake[currentStartedCycleMem] += tokenEntryPowerMem;
             totalExtraEntryPower[currentStartedCycleMem] += extraPower;
         } else {
