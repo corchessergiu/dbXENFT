@@ -438,10 +438,10 @@ contract DBXeNFTFactory is ReentrancyGuard {
      * @param tokenId DBXENFT id.
      */    
     function stake(uint256 amount, uint256 tokenId) external payable nonReentrant onlyNFTOwner(dbxenft, tokenId, msg.sender) {
+        require(amount > 0, "DBXeNFT: amount is zero");
         calculateCycle();
         updateCycleFeesPerStakeSummed();
         updateDBXeNFT(tokenId);
-        require(amount > 0, "DBXen: amount is zero");
 
         uint256 tokenEntryPowerMem = dbxenftEntryPower[tokenId];
         require(tokenEntryPowerMem != 0, "DBXeNFT does not exist");
@@ -505,14 +505,11 @@ contract DBXeNFTFactory is ReentrancyGuard {
      * @param amount amount of DXN to be unstaked.
      */ 
     function unstake(uint256 tokenId, uint256 amount) external nonReentrant onlyNFTOwner(dbxenft, tokenId, msg.sender) {
+        require(amount > 0, "DBXeNFT: Amount is zero");
         calculateCycle();
         updateCycleFeesPerStakeSummed();
         updateDBXeNFT(tokenId);
 
-        require(
-            amount > 0,
-            "DBXeNFT: Amount is zero."
-        );
         require(
             amount <= dbxenftWithdrawableStake[tokenId],
             "DBXeNFT: Amount greater than withdrawable stake"
