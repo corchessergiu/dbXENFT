@@ -647,7 +647,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
         uint256 term
     ) private view returns (uint256 burnFee) {
         uint256 maturityDays = calcMaturityDays(term, maturityTs);
-        uint256 maxDays = Math.max(maturityDays, 0);
+        uint256 maxDays = maturityDays;
         uint256 daysReduction = 11389 * maxDays;
         uint256 maxSubtrahend = Math.min(daysReduction, 5_000_000);
         uint256 difference = MAX_BPS - maxSubtrahend;
