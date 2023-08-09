@@ -37,7 +37,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
     /**
      * Index (0-based) of the current cycle.
      * 
-     * Updated upon cycle setup that is triggered by contract interraction 
+     * Updated upon cycle setup that is triggered by contract interaction 
      * (account burn tokens, claims fees, claims rewards, stakes or unstakes).
      */
     uint256 public currentCycle;
@@ -88,13 +88,13 @@ contract DBXeNFTFactory is ReentrancyGuard {
     uint256 public constant BASE_XEN = 1_000_000_000;
 
     /**
-     * Used to minimise division remainder when earned fees are calculated.
+     * Used to minimize division remainder when earned fees are calculated.
      */
     uint256 public constant SCALING_FACTOR = 1e40;
 
     /**
      * Length of a fee distribution cycle.
-     * Initialized in contstructor to 1 day.
+     * Initialized in constructor to 1 day.
      */
     uint256 public immutable i_periodDuration;
 
@@ -186,7 +186,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
     mapping(uint256 => uint256) public dbxenftFirstStake;
 
     /**
-     * Same as dbxenftFirstStake, but stores the second stake seperately 
+     * Same as dbxenftFirstStake, but stores the second stake separately 
      * in case DXN is staked for the DBXENFT in two consecutive active cycles.
      */
     mapping(uint256 => uint256) public dbxenftSecondStake;
@@ -589,7 +589,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
      * @dev Given a DBXENFT, claim the Xen rewards of the underlying XENFT
      * and direct them to its owner. Not permitted during entry cycle of DBXENFT.
      * In doing so, the base power of the DBXENFT will become 1(unless it's already smaller)
-     * and the DBXENFT total power is updated acording to the new base power
+     * and the DBXENFT total power is updated according to the new base power
      * and the existent DXN stake.
      *
      * @param tokenId DBXENFT id.
