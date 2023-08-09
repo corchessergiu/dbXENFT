@@ -865,7 +865,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
             dbxenftFirstStake[tokenId] = 0;
 
             uint256 tokenSecondStakeMem = dbxenftSecondStake[tokenId];
-            if (dbxenftSecondStake[tokenId] != 0) {
+            if (tokenSecondStakeMem != 0) {
                 if (currentCycle > tokenSecondStakeMem) {
                     uint256 unlockedSecondStake = dbxenftStakeCycle[tokenId][tokenSecondStakeMem];
 
