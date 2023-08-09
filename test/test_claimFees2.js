@@ -299,7 +299,7 @@ describe("Test claimFee functionality", async function() {
         //expect(secondCycleAccruedFees).to.equal(totalCycleAccFeesClaimed);
     })
 
-    it.only("Test fee distribution using the same nft and using extrapower from the stake action", async function() {
+    it("Test fee distribution using the same nft and using extrapower from the stake action", async function() {
         await xenft.bulkClaimRank(128, 10)
         await xenft.approve(dbXeNFTFactory.address, 10001)
         await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
