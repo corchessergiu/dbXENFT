@@ -1,4 +1,4 @@
-const { expect } = require("chai");
+const { expect,assert } = require("chai");
 const { BigNumber } = require("ethers");
 const { ethers } = require("hardhat");
 
@@ -243,6 +243,42 @@ describe("Test stake functionality", async function() {
         await dbXeNFTFactoryDean.stake(ethers.utils.parseEther("9671"), 4, { value: ethers.utils.parseEther(stakFeeDean.toString()) });
         let contractBalanceAfterDeanStake = await ethers.provider.getBalance(dbXeNFTFactory.address);
         expect(contractBalanceAfterDeanStake).to.equal(contractBalanceBeforeDeanStake.add(ethers.utils.parseEther(stakFeeDean.toString())));
+    })
+
+    it.only("Test the stake amount <1000", async function() {
+        let contractBalanceBeforeBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
+        expect(contractBalanceBeforeBurn).to.equal("0");
+        await xenft.bulkClaimRank(128, 71)
+        await xenft.approve(dbXeNFTFactory.address, 10001)
+        await dbXeNFTFactory.mintDBXENFT(10001, { value: ethers.utils.parseEther("1") })
+        let contractBalanceAfterBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
+        expect(contractBalanceAfterBurn).to.be.greaterThan("0");
+
+        let contractBalanceBeforeDeployerStake = await DBX.balanceOf(dbXeNFTFactory.address);
+        expect(contractBalanceBeforeDeployerStake).to.equal("0");
+        await dbXeNFTFactory.stake(999, 0, { value: ethers.utils.parseEther("1") }).then(res=>{
+            assert.fail("must throw err");
+        }).catch(err=>{
+            expect(err.message).to.contain("DBXeNFT: stakeFee must be > 0")
+        })
+
+        await dbXeNFTFactory.stake(1, 0, { value: ethers.utils.parseEther("1") }).then(res=>{
+            assert.fail("must throw err");
+        }).catch(err=>{
+            expect(err.message).to.contain("DBXeNFT: stakeFee must be > 0")
+        })
+
+        await dbXeNFTFactory.stake(ethers.utils.parseEther("0"), 0, { value: ethers.utils.parseEther("1") }).then(res=>{
+            assert.fail("must throw err");
+        }).catch(err=>{
+            expect(err.message).to.contain("DBXeNFT: amount is zero")
+        })
+
+        await dbXeNFTFactory.stake(1000, 0, { value: ethers.utils.parseEther("1") })
+        let contractBalanceAfterDeployerStake = await ethers.provider.getBalance(dbXeNFTFactory.address);
+        expect(contractBalanceAfterDeployerStake).to.equal(contractBalanceAfterBurn.add(1));
+
+      
     })
 
     it("Test extra power for stake", async function() {

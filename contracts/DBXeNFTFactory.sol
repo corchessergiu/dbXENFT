@@ -415,6 +415,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
      */
     function calcStakeFee(uint256 dxnAmount) internal pure returns(uint256 stakeFee){
         stakeFee = dxnAmount / 1000;
+        require(stakeFee > 0, "DBXeNFT: stakeFee must be > 0");
     }
 
     /**
