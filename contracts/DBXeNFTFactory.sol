@@ -592,7 +592,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
      *
      * @param tokenId DBXENFT id.
      */ 
-    function claimXen(uint256 tokenId) external onlyNFTOwner(dbxenft, tokenId, msg.sender) {
+    function claimXen(uint256 tokenId) external nonReentrant onlyNFTOwner(dbxenft, tokenId, msg.sender) {
         calculateCycle();
         updateCycleFeesPerStakeSummed();
         updateDBXeNFT(tokenId);
