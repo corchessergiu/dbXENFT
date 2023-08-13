@@ -26,8 +26,6 @@
         "@faircrypto/xen-crypto": "^0.3.2",
         "@faircrypto/xenft": "^0.3.0",
         "@nomiclabs/hardhat-ethers": "^2.2.3",
-        "@openzeppelin/contracts": "^4.8.3",
-        "@uniswap/v3-core": "file:./node_modules_override/@uniswap/v3-core",
-        "@uniswap/v3-periphery": "file:node_modules_override/@uniswap/v3-periphery"
+        "@openzeppelin/contracts": "^4.8.3"
     }
 }

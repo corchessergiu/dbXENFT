@@ -5,9 +5,9 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "@faircrypto/xen-crypto/contracts/XENCrypto.sol";
-import "@faircrypto/xen-crypto/contracts/interfaces/IBurnableToken.sol";
-import "@faircrypto/xen-crypto/contracts/interfaces/IBurnRedeemable.sol";
+// import "@faircrypto/xen-crypto/contracts/XENCrypto.sol";
+// import "@faircrypto/xen-crypto/contracts/interfaces/IBurnableToken.sol";
+// import "@faircrypto/xen-crypto/contracts/interfaces/IBurnRedeemable.sol";
 import "operator-filter-registry/src/DefaultOperatorFilterer.sol";
 import "./libs/ERC2771Context.sol";
 import "./interfaces/IERC2771.sol";
@@ -16,6 +16,9 @@ import "./interfaces/IXENProxying.sol";
 import "./libs/MintInfo.sol";
 import "./libs/Metadata.sol";
 import "./libs/Array.sol";
+import "./interfaces/IBurnableToken.sol";
+import "./interfaces/IBurnRedeemable.sol";
+import "./XENCrypto.sol";
 /*
 
         \\      //   |||||||||||   |\      ||       A CRYPTOCURRENCY FOR THE MASSES

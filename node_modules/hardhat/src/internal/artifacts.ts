@@ -444,8 +444,6 @@ export class Artifacts implements IArtifacts {
         const buildInfoFile = await this._getBuildInfoFromDebugFile(debugFile);
         if (buildInfoFile !== undefined) {
           return path.resolve(path.dirname(debugFile), buildInfoFile);
-        } else {
-          return undefined;
         }
       })
     );
@@ -635,7 +633,7 @@ export class Artifacts implements IArtifacts {
         );
       }
 
-      // eslint-disable-next-line @nomiclabs/hardhat-internal-rules/only-hardhat-error
+      // eslint-disable-next-line @nomicfoundation/hardhat-internal-rules/only-hardhat-error
       throw e;
     }
   }
@@ -806,7 +804,7 @@ Please replace "${contractName}" for the correct contract name wherever you are 
         );
       }
 
-      // eslint-disable-next-line @nomiclabs/hardhat-internal-rules/only-hardhat-error
+      // eslint-disable-next-line @nomicfoundation/hardhat-internal-rules/only-hardhat-error
       throw e;
     }
   }
@@ -859,20 +857,14 @@ Please replace "${contractName}" for the correct contract name wherever you are 
   }
 
   /**
-   * Remove the artifact file, its debug file and, if it exists, its build
-   * info file.
+   * Remove the artifact file and its debug file.
    */
   private async _removeArtifactFiles(artifactPath: string) {
     await fsExtra.remove(artifactPath);
 
     const debugFilePath = this._getDebugFilePath(artifactPath);
-    const buildInfoPath = await this._getBuildInfoFromDebugFile(debugFilePath);
 
     await fsExtra.remove(debugFilePath);
-
-    if (buildInfoPath !== undefined) {
-      await fsExtra.remove(buildInfoPath);
-    }
   }
 
   /**
