@@ -774,12 +774,9 @@ contract DBXeNFTFactory is ReentrancyGuard {
 
             uint256 lastStartedCycleMemory = lastStartedCycle;
             if(dbxenftEntryPowerWithStake[lastStartedCycleMemory] != 0) {
-                uint256 powerForEntryWithStake = Math.mulDiv(dbxenftEntryPowerWithStake[lastStartedCycleMemory],
-                    lastCycleReward, totalEntryPowerPerCycle[lastStartedCycleMemory]); 
-                uint256 extraPower = Math.mulDiv(totalExtraEntryPower[lastStartedCycleMemory],
-                    powerForEntryWithStake, dbxenftEntryPowerWithStake[lastStartedCycleMemory]);
+                uint256 extraPower = Math.mulDiv(totalExtraEntryPower[lastStartedCycleMemory],lastCycleReward,
+                    totalEntryPowerPerCycle[lastStartedCycleMemory]);
                 summedCyclePowers[currentCycleMemory] += extraPower;
-                
             }
 
             if(pendingPower != 0) {
