@@ -245,7 +245,7 @@ describe("Test stake functionality", async function() {
         expect(contractBalanceAfterDeanStake).to.equal(contractBalanceBeforeDeanStake.add(ethers.utils.parseEther(stakFeeDean.toString())));
     })
 
-    it.only("Test the stake amount <1000", async function() {
+    it("Test the stake amount <1000", async function() {
         let contractBalanceBeforeBurn = await ethers.provider.getBalance(dbXeNFTFactory.address);
         expect(contractBalanceBeforeBurn).to.equal("0");
         await xenft.bulkClaimRank(128, 71)

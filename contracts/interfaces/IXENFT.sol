@@ -8,5 +8,5 @@ interface IXENFT is IERC721{
 
     function mintInfo(uint256 tokenId) external view returns (uint256);
 
-    function bulkClaimMintReward(uint256 tokenId, address dest) external view ;
+    function bulkClaimMintReward(uint256 tokenId, address dest) external;
 }
