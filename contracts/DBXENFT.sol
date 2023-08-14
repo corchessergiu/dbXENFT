@@ -15,7 +15,6 @@ contract DBXENFT is
 {
     using Strings for uint256;
     address public immutable factory;
-    uint256 currentTokenId = 1;
 
     address public ADMIN_ADDRESS = 0xa907b9Ad914Be4E2E0AD5B5feCd3c6caD959ee5A;
     
@@ -35,9 +34,8 @@ contract DBXENFT is
         address _to
     ) external nonReentrant returns (uint256 tokenId) {
         require(msg.sender == factory, "DBXENFT: Only factory can mint");
-        _safeMint(_to, currentTokenId);
-        tokenId = currentTokenId;
-        currentTokenId++;
+        _safeMint(_to, totalSupply() +1);
+        tokenId = totalSupply() +1;
         return tokenId;
     }
 
