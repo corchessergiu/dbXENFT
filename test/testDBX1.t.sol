@@ -76,7 +76,8 @@ address(xenCrypto));
  vm.warp(block.timestamp + 3 days);
  console2.log("Bob stakes 10 XEN on DBXeNFT#0");
  // if fixed this should be commented and work;
- vm.expectRevert();
+ // should not revert
+ //  vm.expectRevert();
  factory.stake{value: 1 ether}(10 ether, dBxenftId1);
  vm.stopPrank();
  }

@@ -445,7 +445,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
         updateDBXeNFT(tokenId);
 
         uint256 tokenEntryPowerMem = dbxenftEntryPower[tokenId];
-        require(tokenEntryPowerMem != 0, "DBXeNFT does not exist");
+        require(tokenEntryPowerMem != 0 || baseDBXeNFTPower[tokenId] !=0, "DBXeNFT does not exist");
 
         uint256 stakeFee = calcStakeFee(amount);
         require(msg.value >= stakeFee, "Value less than staking fee");
