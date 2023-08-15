@@ -66,8 +66,8 @@
       }
     },
     "contracts/DBXeNFTFactory.sol": {
-      "lastModificationDate": 1692111565464,
-      "contentHash": "171174bde693a85c9467e9769b4526e4",
+      "lastModificationDate": 1692112096039,
+      "contentHash": "e08b4accca8300aebbcd2a34713cb017",
       "sourceName": "contracts/DBXeNFTFactory.sol",
       "solcConfig": {
         "settings": {

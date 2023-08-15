@@ -379,21 +379,24 @@ contract DBXeNFTFactory is ReentrancyGuard {
 
             if(currentCycleMem == currentStartedCycle) {
                 summedCyclePowers[currentCycleMem] += 1e18;
+                cycleAccruedFees[currentCycleMem] = cycleAccruedFees[currentCycleMem] + fee;
+
             } else {
                 pendingPower += 1e18;
+                pendingFees+=fee;
             }
         } else {
             setUpNewCycle();
             dbxenftEntryPower[dbxenftId] = estimatedReward;
             tokenEntryCycle[dbxenftId] = currentCycleMem;
             totalEntryPowerPerCycle[currentCycleMem] += estimatedReward;
+            cycleAccruedFees[currentCycleMem] = cycleAccruedFees[currentCycleMem] + fee;
 
             if(currentCycleMem != 0) {
                 lastFeeUpdateCycle[dbxenftId] = lastStartedCycle + 1;
             }
         }
     
-        cycleAccruedFees[currentCycleMem] = cycleAccruedFees[currentCycleMem] + fee;
         dbxenftUnderlyingXENFT[dbxenftId] = xenftId;
 
         xenft.transferFrom(msg.sender, address(this), xenftId);
