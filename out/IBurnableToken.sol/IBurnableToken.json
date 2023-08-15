@@ -1,0 +1,239 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "burn",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "burn(address,uint256)": "9dc29fac"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.21+commit.d9974bed\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"burn\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/interfaces/IBurnableToken.sol\":\"IBurnableToken\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@faircrypto/=node_modules/@faircrypto/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":abdk-libraries-solidity/=node_modules/abdk-libraries-solidity/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat/=node_modules/hardhat/\",\":operator-filter-registry/=node_modules/operator-filter-registry/\"]},\"sources\":{\"contracts/interfaces/IBurnableToken.sol\":{\"keccak256\":\"0xb190a658a056ab262234006d3b3337c062e0edb72dc33f312b39d1ffacd36b3f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9dec9b85406d680a1e4b40e20af29e9c84775d711ea62f3c7a7303fc76afedda\",\"dweb:/ipfs/QmcytThNgmDDKnBkfCmRTkBQ4CrCE9BrV8mLaWbwiZZnEp\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.21+commit.d9974bed"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "burn"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@faircrypto/=node_modules/@faircrypto/",
+        "@openzeppelin/=node_modules/@openzeppelin/",
+        "abdk-libraries-solidity/=node_modules/abdk-libraries-solidity/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/",
+        "operator-filter-registry/=node_modules/operator-filter-registry/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/interfaces/IBurnableToken.sol": "IBurnableToken"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/interfaces/IBurnableToken.sol": {
+        "keccak256": "0xb190a658a056ab262234006d3b3337c062e0edb72dc33f312b39d1ffacd36b3f",
+        "urls": [
+          "bzz-raw://9dec9b85406d680a1e4b40e20af29e9c84775d711ea62f3c7a7303fc76afedda",
+          "dweb:/ipfs/QmcytThNgmDDKnBkfCmRTkBQ4CrCE9BrV8mLaWbwiZZnEp"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/interfaces/IBurnableToken.sol",
+    "id": 5069,
+    "exportedSymbols": {
+      "IBurnableToken": [
+        5068
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:113:7",
+    "nodes": [
+      {
+        "id": 5060,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:7",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".10"
+        ]
+      },
+      {
+        "id": 5068,
+        "nodeType": "ContractDefinition",
+        "src": "58:86:7",
+        "nodes": [
+          {
+            "id": 5067,
+            "nodeType": "FunctionDefinition",
+            "src": "89:53:7",
+            "nodes": [],
+            "functionSelector": "9dc29fac",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "burn",
+            "nameLocation": "98:4:7",
+            "parameters": {
+              "id": 5065,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5062,
+                  "mutability": "mutable",
+                  "name": "user",
+                  "nameLocation": "111:4:7",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5067,
+                  "src": "103:12:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5061,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "103:7:7",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5064,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "125:6:7",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5067,
+                  "src": "117:14:7",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5063,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "117:7:7",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "102:30:7"
+            },
+            "returnParameters": {
+              "id": 5066,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "141:0:7"
+            },
+            "scope": 5068,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IBurnableToken",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          5068
+        ],
+        "name": "IBurnableToken",
+        "nameLocation": "68:14:7",
+        "scope": 5069,
+        "usedErrors": [],
+        "usedEvents": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 7
+}

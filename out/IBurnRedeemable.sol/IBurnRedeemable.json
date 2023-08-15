@@ -1,0 +1,475 @@
+{
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "xenContract",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "tokenContract",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "xenAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "tokenAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Redeemed",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "user",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "onTokenBurned",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "onTokenBurned(address,uint256)": "543746b1"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.21+commit.d9974bed\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"xenContract\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"tokenContract\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"xenAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"tokenAmount\",\"type\":\"uint256\"}],\"name\":\"Redeemed\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"user\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"onTokenBurned\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/interfaces/IBurnRedeemable.sol\":\"IBurnRedeemable\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@faircrypto/=node_modules/@faircrypto/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":abdk-libraries-solidity/=node_modules/abdk-libraries-solidity/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat/=node_modules/hardhat/\",\":operator-filter-registry/=node_modules/operator-filter-registry/\"]},\"sources\":{\"contracts/interfaces/IBurnRedeemable.sol\":{\"keccak256\":\"0x2c4dea1f7d6fde9970dab550c99a716b83e5856a17d4930143f2a9255429a556\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://02fe40f954db1f689f448df1c4b654bff6c7dffc326aea7f91c56b434af9d961\",\"dweb:/ipfs/Qmd1EToFPT1qVy4CU1ATTmjZb5rhP66MHpfLpTHGaDkL66\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.21+commit.d9974bed"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "user",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "xenContract",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "tokenContract",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "uint256",
+              "name": "xenAmount",
+              "type": "uint256",
+              "indexed": false
+            },
+            {
+              "internalType": "uint256",
+              "name": "tokenAmount",
+              "type": "uint256",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "Redeemed",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "onTokenBurned"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@faircrypto/=node_modules/@faircrypto/",
+        "@openzeppelin/=node_modules/@openzeppelin/",
+        "abdk-libraries-solidity/=node_modules/abdk-libraries-solidity/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/",
+        "operator-filter-registry/=node_modules/operator-filter-registry/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/interfaces/IBurnRedeemable.sol": "IBurnRedeemable"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/interfaces/IBurnRedeemable.sol": {
+        "keccak256": "0x2c4dea1f7d6fde9970dab550c99a716b83e5856a17d4930143f2a9255429a556",
+        "urls": [
+          "bzz-raw://02fe40f954db1f689f448df1c4b654bff6c7dffc326aea7f91c56b434af9d961",
+          "dweb:/ipfs/Qmd1EToFPT1qVy4CU1ATTmjZb5rhP66MHpfLpTHGaDkL66"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/interfaces/IBurnRedeemable.sol",
+    "id": 5059,
+    "exportedSymbols": {
+      "IBurnRedeemable": [
+        5058
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:312:6",
+    "nodes": [
+      {
+        "id": 5038,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:6",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".10"
+        ]
+      },
+      {
+        "id": 5058,
+        "nodeType": "ContractDefinition",
+        "src": "58:285:6",
+        "nodes": [
+          {
+            "id": 5050,
+            "nodeType": "EventDefinition",
+            "src": "90:183:6",
+            "nodes": [],
+            "anonymous": false,
+            "eventSelector": "da4c370e4f539b8e19d66144cad73d70fbf440a544e56ff38e28e38ed47801a8",
+            "name": "Redeemed",
+            "nameLocation": "96:8:6",
+            "parameters": {
+              "id": 5049,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5040,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "user",
+                  "nameLocation": "130:4:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5050,
+                  "src": "114:20:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5039,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "114:7:6",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5042,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "xenContract",
+                  "nameLocation": "160:11:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5050,
+                  "src": "144:27:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5041,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "144:7:6",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5044,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "tokenContract",
+                  "nameLocation": "197:13:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5050,
+                  "src": "181:29:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5043,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "181:7:6",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5046,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "xenAmount",
+                  "nameLocation": "228:9:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5050,
+                  "src": "220:17:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5045,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "220:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5048,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "tokenAmount",
+                  "nameLocation": "255:11:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5050,
+                  "src": "247:19:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5047,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "247:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "104:168:6"
+            }
+          },
+          {
+            "id": 5057,
+            "nodeType": "FunctionDefinition",
+            "src": "279:62:6",
+            "nodes": [],
+            "functionSelector": "543746b1",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onTokenBurned",
+            "nameLocation": "288:13:6",
+            "parameters": {
+              "id": 5055,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5052,
+                  "mutability": "mutable",
+                  "name": "user",
+                  "nameLocation": "310:4:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5057,
+                  "src": "302:12:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5051,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "302:7:6",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5054,
+                  "mutability": "mutable",
+                  "name": "amount",
+                  "nameLocation": "324:6:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5057,
+                  "src": "316:14:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5053,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "316:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "301:30:6"
+            },
+            "returnParameters": {
+              "id": 5056,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "340:0:6"
+            },
+            "scope": 5058,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IBurnRedeemable",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          5058
+        ],
+        "name": "IBurnRedeemable",
+        "nameLocation": "68:15:6",
+        "scope": 5059,
+        "usedErrors": [],
+        "usedEvents": [
+          5050
+        ]
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 6
+}

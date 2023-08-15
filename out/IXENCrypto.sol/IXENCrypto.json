@@ -1,0 +1,436 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "rankDelta",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amplifier",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "term",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "EAA",
+          "type": "uint256"
+        }
+      ],
+      "name": "getGrossReward",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "globalRank",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "getGrossReward(uint256,uint256,uint256,uint256)": "b0fd1fc2",
+    "globalRank()": "1c244082"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.21+commit.d9974bed\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"rankDelta\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amplifier\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"term\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"EAA\",\"type\":\"uint256\"}],\"name\":\"getGrossReward\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"globalRank\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/interfaces/IXENCrypto.sol\":\"IXENCrypto\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@faircrypto/=node_modules/@faircrypto/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":abdk-libraries-solidity/=node_modules/abdk-libraries-solidity/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat/=node_modules/hardhat/\",\":operator-filter-registry/=node_modules/operator-filter-registry/\"]},\"sources\":{\"contracts/interfaces/IXENCrypto.sol\":{\"keccak256\":\"0x3401fbce851e519c58e2ffcf8baa6faacb60f950d8822f9f6d2128f319dc6f7e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://dbd301980cb7f4465c94f359a774c883177fcf5fe72162a5fb71dd51447fde01\",\"dweb:/ipfs/QmTs8nGTf1rgy68y4QqtV7HrodJc3bCDh6ropRhHvic6sQ\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.21+commit.d9974bed"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "rankDelta",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amplifier",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "term",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "EAA",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getGrossReward",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "globalRank",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@faircrypto/=node_modules/@faircrypto/",
+        "@openzeppelin/=node_modules/@openzeppelin/",
+        "abdk-libraries-solidity/=node_modules/abdk-libraries-solidity/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/",
+        "operator-filter-registry/=node_modules/operator-filter-registry/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/interfaces/IXENCrypto.sol": "IXENCrypto"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/interfaces/IXENCrypto.sol": {
+        "keccak256": "0x3401fbce851e519c58e2ffcf8baa6faacb60f950d8822f9f6d2128f319dc6f7e",
+        "urls": [
+          "bzz-raw://dbd301980cb7f4465c94f359a774c883177fcf5fe72162a5fb71dd51447fde01",
+          "dweb:/ipfs/QmTs8nGTf1rgy68y4QqtV7HrodJc3bCDh6ropRhHvic6sQ"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/interfaces/IXENCrypto.sol",
+    "id": 5152,
+    "exportedSymbols": {
+      "IXENCrypto": [
+        5151
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:277:11",
+    "nodes": [
+      {
+        "id": 5132,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:11",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".10"
+        ]
+      },
+      {
+        "id": 5151,
+        "nodeType": "ContractDefinition",
+        "src": "58:251:11",
+        "nodes": [
+          {
+            "id": 5137,
+            "nodeType": "FunctionDefinition",
+            "src": "85:54:11",
+            "nodes": [],
+            "functionSelector": "1c244082",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "globalRank",
+            "nameLocation": "94:10:11",
+            "parameters": {
+              "id": 5133,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "104:2:11"
+            },
+            "returnParameters": {
+              "id": 5136,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5135,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5137,
+                  "src": "130:7:11",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5134,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "130:7:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "129:9:11"
+            },
+            "scope": 5151,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 5150,
+            "nodeType": "FunctionDefinition",
+            "src": "144:163:11",
+            "nodes": [],
+            "functionSelector": "b0fd1fc2",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getGrossReward",
+            "nameLocation": "153:14:11",
+            "parameters": {
+              "id": 5146,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5139,
+                  "mutability": "mutable",
+                  "name": "rankDelta",
+                  "nameLocation": "185:9:11",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5150,
+                  "src": "177:17:11",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5138,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "177:7:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5141,
+                  "mutability": "mutable",
+                  "name": "amplifier",
+                  "nameLocation": "212:9:11",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5150,
+                  "src": "204:17:11",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5140,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "204:7:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5143,
+                  "mutability": "mutable",
+                  "name": "term",
+                  "nameLocation": "239:4:11",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5150,
+                  "src": "231:12:11",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5142,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "231:7:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5145,
+                  "mutability": "mutable",
+                  "name": "EAA",
+                  "nameLocation": "261:3:11",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5150,
+                  "src": "253:11:11",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5144,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "253:7:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "167:107:11"
+            },
+            "returnParameters": {
+              "id": 5149,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5148,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5150,
+                  "src": "298:7:11",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5147,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "298:7:11",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "297:9:11"
+            },
+            "scope": 5151,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IXENCrypto",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          5151
+        ],
+        "name": "IXENCrypto",
+        "nameLocation": "68:10:11",
+        "scope": 5152,
+        "usedErrors": [],
+        "usedEvents": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 11
+}

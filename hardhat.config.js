@@ -1,6 +1,7 @@
 /** @type import('hardhat/config').HardhatUserConfig */
 require("@nomicfoundation/hardhat-toolbox");
 require("@nomicfoundation/hardhat-chai-matchers")
+require("@nomicfoundation/hardhat-foundry");
 
 module.exports = {
     solidity: {

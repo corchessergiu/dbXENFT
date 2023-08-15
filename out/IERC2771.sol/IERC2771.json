@@ -1,0 +1,202 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "forwarder",
+          "type": "address"
+        }
+      ],
+      "name": "isTrustedForwarder",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "isTrustedForwarder(address)": "572b6c05"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.21+commit.d9974bed\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"forwarder\",\"type\":\"address\"}],\"name\":\"isTrustedForwarder\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/interfaces/IERC2771.sol\":\"IERC2771\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@faircrypto/=node_modules/@faircrypto/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":abdk-libraries-solidity/=node_modules/abdk-libraries-solidity/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat/=node_modules/hardhat/\",\":operator-filter-registry/=node_modules/operator-filter-registry/\"]},\"sources\":{\"contracts/interfaces/IERC2771.sol\":{\"keccak256\":\"0x944db5e4f408805b6f7743cafed63094ef0cd8a0a5107c1ff371462760e17eff\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6e0d959fca9344a64262d9ed92834f18663fe16efe15476c1e603ee797c9dc37\",\"dweb:/ipfs/Qmdfr6QJPyeN2dLZe6jZyWr3H7kqzPyTSqTaiMjWBJLZGu\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.21+commit.d9974bed"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "forwarder",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "isTrustedForwarder"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@faircrypto/=node_modules/@faircrypto/",
+        "@openzeppelin/=node_modules/@openzeppelin/",
+        "abdk-libraries-solidity/=node_modules/abdk-libraries-solidity/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/",
+        "operator-filter-registry/=node_modules/operator-filter-registry/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/interfaces/IERC2771.sol": "IERC2771"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/interfaces/IERC2771.sol": {
+        "keccak256": "0x944db5e4f408805b6f7743cafed63094ef0cd8a0a5107c1ff371462760e17eff",
+        "urls": [
+          "bzz-raw://6e0d959fca9344a64262d9ed92834f18663fe16efe15476c1e603ee797c9dc37",
+          "dweb:/ipfs/Qmdfr6QJPyeN2dLZe6jZyWr3H7kqzPyTSqTaiMjWBJLZGu"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/interfaces/IERC2771.sol",
+    "id": 5077,
+    "exportedSymbols": {
+      "IERC2771": [
+        5076
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:109:8",
+    "nodes": [
+      {
+        "id": 5070,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:8",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".10"
+        ]
+      },
+      {
+        "id": 5076,
+        "nodeType": "ContractDefinition",
+        "src": "58:83:8",
+        "nodes": [
+          {
+            "id": 5075,
+            "nodeType": "FunctionDefinition",
+            "src": "83:56:8",
+            "nodes": [],
+            "functionSelector": "572b6c05",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "isTrustedForwarder",
+            "nameLocation": "92:18:8",
+            "parameters": {
+              "id": 5073,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5072,
+                  "mutability": "mutable",
+                  "name": "forwarder",
+                  "nameLocation": "119:9:8",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5075,
+                  "src": "111:17:8",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5071,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "111:7:8",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "110:19:8"
+            },
+            "returnParameters": {
+              "id": 5074,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "138:0:8"
+            },
+            "scope": 5076,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IERC2771",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          5076
+        ],
+        "name": "IERC2771",
+        "nameLocation": "68:8:8",
+        "scope": 5077,
+        "usedErrors": [],
+        "usedEvents": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 8
+}

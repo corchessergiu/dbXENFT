@@ -1,0 +1,326 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        }
+      ],
+      "name": "callClaimMintReward",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "term",
+          "type": "uint256"
+        }
+      ],
+      "name": "callClaimRank",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "powerDown",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "callClaimMintReward(address)": "df0030ef",
+    "callClaimRank(uint256)": "01bb4116",
+    "powerDown()": "928dd2a7"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.21+commit.d9974bed\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"}],\"name\":\"callClaimMintReward\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"term\",\"type\":\"uint256\"}],\"name\":\"callClaimRank\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"powerDown\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/interfaces/IXENProxying.sol\":\"IXENProxying\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@faircrypto/=node_modules/@faircrypto/\",\":@openzeppelin/=node_modules/@openzeppelin/\",\":abdk-libraries-solidity/=node_modules/abdk-libraries-solidity/\",\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":forge-std/=lib/forge-std/src/\",\":hardhat/=node_modules/hardhat/\",\":operator-filter-registry/=node_modules/operator-filter-registry/\"]},\"sources\":{\"contracts/interfaces/IXENProxying.sol\":{\"keccak256\":\"0xdd01fb8c8e3c7d639c331e3bec7484fbc1617dffd0b8ca1bb7331887888b8760\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://909ea073c36e432730f1ff6c2a49f44e4d2a4691e6d1905a484ed07879a402ba\",\"dweb:/ipfs/QmbC4RXZnk8aZpgqv8pWumKieUcBVgN3EQjwmZk4dEBChx\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.21+commit.d9974bed"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "callClaimMintReward"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "term",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "callClaimRank"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "powerDown"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@faircrypto/=node_modules/@faircrypto/",
+        "@openzeppelin/=node_modules/@openzeppelin/",
+        "abdk-libraries-solidity/=node_modules/abdk-libraries-solidity/",
+        "ds-test/=lib/forge-std/lib/ds-test/src/",
+        "eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        "forge-std/=lib/forge-std/src/",
+        "hardhat/=node_modules/hardhat/",
+        "operator-filter-registry/=node_modules/operator-filter-registry/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/interfaces/IXENProxying.sol": "IXENProxying"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/interfaces/IXENProxying.sol": {
+        "keccak256": "0xdd01fb8c8e3c7d639c331e3bec7484fbc1617dffd0b8ca1bb7331887888b8760",
+        "urls": [
+          "bzz-raw://909ea073c36e432730f1ff6c2a49f44e4d2a4691e6d1905a484ed07879a402ba",
+          "dweb:/ipfs/QmbC4RXZnk8aZpgqv8pWumKieUcBVgN3EQjwmZk4dEBChx"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/interfaces/IXENProxying.sol",
+    "id": 5195,
+    "exportedSymbols": {
+      "IXENProxying": [
+        5194
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:195:13",
+    "nodes": [
+      {
+        "id": 5180,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:13",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".10"
+        ]
+      },
+      {
+        "id": 5194,
+        "nodeType": "ContractDefinition",
+        "src": "58:169:13",
+        "nodes": [
+          {
+            "id": 5185,
+            "nodeType": "FunctionDefinition",
+            "src": "87:46:13",
+            "nodes": [],
+            "functionSelector": "01bb4116",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "callClaimRank",
+            "nameLocation": "96:13:13",
+            "parameters": {
+              "id": 5183,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5182,
+                  "mutability": "mutable",
+                  "name": "term",
+                  "nameLocation": "118:4:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5185,
+                  "src": "110:12:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5181,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "110:7:13",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "109:14:13"
+            },
+            "returnParameters": {
+              "id": 5184,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "132:0:13"
+            },
+            "scope": 5194,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 5190,
+            "nodeType": "FunctionDefinition",
+            "src": "139:50:13",
+            "nodes": [],
+            "functionSelector": "df0030ef",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "callClaimMintReward",
+            "nameLocation": "148:19:13",
+            "parameters": {
+              "id": 5188,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5187,
+                  "mutability": "mutable",
+                  "name": "to",
+                  "nameLocation": "176:2:13",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5190,
+                  "src": "168:10:13",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5186,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "168:7:13",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "167:12:13"
+            },
+            "returnParameters": {
+              "id": 5189,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "188:0:13"
+            },
+            "scope": 5194,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 5193,
+            "nodeType": "FunctionDefinition",
+            "src": "195:30:13",
+            "nodes": [],
+            "functionSelector": "928dd2a7",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "powerDown",
+            "nameLocation": "204:9:13",
+            "parameters": {
+              "id": 5191,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "213:2:13"
+            },
+            "returnParameters": {
+              "id": 5192,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "224:0:13"
+            },
+            "scope": 5194,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IXENProxying",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          5194
+        ],
+        "name": "IXENProxying",
+        "nameLocation": "68:12:13",
+        "scope": 5195,
+        "usedErrors": [],
+        "usedEvents": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 13
+}

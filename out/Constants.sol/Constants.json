@@ -1,0 +1,131 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "node_modules/operator-filter-registry/src/lib/Constants.sol",
+    "id": 17612,
+    "exportedSymbols": {
+      "CANONICAL_CORI_SUBSCRIPTION": [
+        17611
+      ],
+      "CANONICAL_OPERATOR_FILTER_REGISTRY_ADDRESS": [
+        17608
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:223:59",
+    "nodes": [
+      {
+        "id": 17605,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:59",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".13"
+        ]
+      },
+      {
+        "id": 17608,
+        "nodeType": "VariableDeclaration",
+        "src": "58:104:59",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "CANONICAL_OPERATOR_FILTER_REGISTRY_ADDRESS",
+        "nameLocation": "75:42:59",
+        "scope": 17612,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_address",
+          "typeString": "address"
+        },
+        "typeName": {
+          "id": 17606,
+          "name": "address",
+          "nodeType": "ElementaryTypeName",
+          "src": "58:7:59",
+          "stateMutability": "nonpayable",
+          "typeDescriptions": {
+            "typeIdentifier": "t_address",
+            "typeString": "address"
+          }
+        },
+        "value": {
+          "hexValue": "307830303030303030303030303041416542364437363730453532324137313830363733333363643445",
+          "id": 17607,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "number",
+          "lValueRequested": false,
+          "nodeType": "Literal",
+          "src": "120:42:59",
+          "typeDescriptions": {
+            "typeIdentifier": "t_address",
+            "typeString": "address"
+          },
+          "value": "0x000000000000AAeB6D7670E522A718067333cd4E"
+        },
+        "visibility": "internal"
+      },
+      {
+        "id": 17611,
+        "nodeType": "VariableDeclaration",
+        "src": "164:89:59",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "CANONICAL_CORI_SUBSCRIPTION",
+        "nameLocation": "181:27:59",
+        "scope": 17612,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_address",
+          "typeString": "address"
+        },
+        "typeName": {
+          "id": 17609,
+          "name": "address",
+          "nodeType": "ElementaryTypeName",
+          "src": "164:7:59",
+          "stateMutability": "nonpayable",
+          "typeDescriptions": {
+            "typeIdentifier": "t_address",
+            "typeString": "address"
+          }
+        },
+        "value": {
+          "hexValue": "307833636336436464413736306237396241666130386446343145434641323234663831306443654236",
+          "id": 17610,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "number",
+          "lValueRequested": false,
+          "nodeType": "Literal",
+          "src": "211:42:59",
+          "typeDescriptions": {
+            "typeIdentifier": "t_address",
+            "typeString": "address"
+          },
+          "value": "0x3cc6CddA760b79bAfa08dF41ECFA224f810dCeB6"
+        },
+        "visibility": "internal"
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 59
+}
