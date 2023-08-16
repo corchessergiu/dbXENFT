@@ -34,8 +34,8 @@ contract DBXENFT is
         address _to
     ) external nonReentrant returns (uint256 tokenId) {
         require(msg.sender == factory, "DBXENFT: Only factory can mint");
-        _safeMint(_to, totalSupply() +1);
-        tokenId = totalSupply() +1;
+         tokenId = totalSupply() +1;
+        _safeMint(_to, tokenId);
         return tokenId;
     }
 
