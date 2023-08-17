@@ -213,6 +213,11 @@ contract DBXeNFTFactory is ReentrancyGuard {
     mapping(uint256 => uint256) public lastFeeUpdateCycle;
 
     /**
+     * Last cycle in which the power of the DBXENFT was updated.
+     */
+    mapping(uint256 => uint256) public lastPowerUpdateCycle;
+
+    /**
      * DXN amount a DBXENFT can currently withdraw.
      */
     mapping(uint256 => uint256) public dbxenftWithdrawableStake;
@@ -824,18 +829,26 @@ contract DBXeNFTFactory is ReentrancyGuard {
         }
 
         uint256 lastStartedCycleMem = lastStartedCycle;
+        uint256 stakedDXN = pendingDXN[tokenId];
+        uint256 extraPower;
+        uint256 dbxenftPowerBeforeExtraPower = dbxenftPower[tokenId];
+        if(currentCycle > lastPowerUpdateCycle[tokenId] && stakedDXN != 0) {
+            extraPower = calcExtraPower(baseDBXeNFTPower[tokenId], stakedDXN);
+            pendingDXN[tokenId] = 0;
+            dbxenftPower[tokenId] += extraPower;
+            lastPowerUpdateCycle[tokenId] = currentCycle;
+        }
+
         if (
             currentCycle > lastStartedCycleMem &&
             lastFeeUpdateCycle[tokenId] != lastStartedCycleMem + 1
         ) {
             
-            dbxenftAccruedFees[tokenId] += (dbxenftPower[tokenId] 
+            dbxenftAccruedFees[tokenId] += (dbxenftPowerBeforeExtraPower
                     * (cycleFeesPerPowerSummed[lastStartedCycleMem + 1] - cycleFeesPerPowerSummed[lastFeeUpdateCycle[tokenId]])) / SCALING_FACTOR;
 
-            uint256 stakedDXN = pendingDXN[tokenId];
             if(stakedDXN != 0) {
                 uint256 stakeCycle = dbxenftFirstStake[tokenId] - 1;
-                uint256 extraPower = calcExtraPower(baseDBXeNFTPower[tokenId], stakedDXN);
             
                 if(lastStartedCycleMem != stakeCycle
                     && currentStartedCycle != lastStartedCycleMem) {
@@ -843,8 +856,6 @@ contract DBXeNFTFactory is ReentrancyGuard {
                         * (cycleFeesPerPowerSummed[lastStartedCycleMem + 1] - 
                         cycleFeesPerPowerSummed[stakeCycle + 1])) / SCALING_FACTOR;
                 }
-                pendingDXN[tokenId] = 0;
-                dbxenftPower[tokenId] += extraPower;
             }
             
             lastFeeUpdateCycle[tokenId] = lastStartedCycleMem + 1;
