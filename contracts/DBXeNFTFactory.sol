@@ -203,12 +203,12 @@ contract DBXeNFTFactory is ReentrancyGuard {
     mapping(uint256 => uint256) public pendingDXN;
 
     /**
-     * DXN amount a DBXENFT has staked and is locked during given cycle.
+     * Amount of unclaimed fees of given DBXENFT since last stats update.
      */
     mapping(uint256 => uint256) public dbxenftAccruedFees;
 
     /**
-     * DXN amount a DBXENFT has staked and is locked during given cycle.
+     * Last cycle in which the total accrued fee amount of the DBXENFT was updated.
      */
     mapping(uint256 => uint256) public lastFeeUpdateCycle;
 
