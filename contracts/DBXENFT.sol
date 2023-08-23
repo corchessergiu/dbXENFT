@@ -94,7 +94,7 @@ contract DBXENFT is
     function setBaseExtension(
         string memory _newBaseExtension
     ) public {
-       require(msg.sender == ADMIN_ADDRESS, "DBXENFT: Only admin set baseExtension!");
+       require(msg.sender == ADMIN_ADDRESS, "DBXENFT: Only admin can set baseExtension!");
         baseExtension = _newBaseExtension;
     }
 
