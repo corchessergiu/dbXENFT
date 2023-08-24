@@ -9,6 +9,7 @@ import "./interfaces/IXENCrypto.sol";
 import "./interfaces/IXENFT.sol";
 import "./libs/MintInfo.sol";
 import "./DBXENFT.sol";
+import "hardhat/console.sol";
 
 contract DBXeNFTFactory is ReentrancyGuard {
     using MintInfo for uint256;
@@ -848,13 +849,18 @@ contract DBXeNFTFactory is ReentrancyGuard {
                     * (cycleFeesPerPowerSummed[lastStartedCycleMem + 1] - cycleFeesPerPowerSummed[lastFeeUpdateCycle[tokenId]])) / SCALING_FACTOR;
 
             if(stakedDXN != 0) {
-                uint256 stakeCycle = dbxenftFirstStake[tokenId] - 1;
-            
-                if(lastStartedCycleMem != stakeCycle
-                    && currentStartedCycle != lastStartedCycleMem) {
+                uint256 stakeCycle;
+                
+                if(dbxenftSecondStake[tokenId] != 0) {
+                    stakeCycle = dbxenftSecondStake[tokenId];
+                } else {
+                    stakeCycle = dbxenftFirstStake[tokenId];
+                }
+                 
+                if(lastStartedCycleMem >= stakeCycle) {
                         dbxenftAccruedFees[tokenId] += (extraPower 
                         * (cycleFeesPerPowerSummed[lastStartedCycleMem + 1] - 
-                        cycleFeesPerPowerSummed[stakeCycle + 1])) / SCALING_FACTOR;
+                        cycleFeesPerPowerSummed[stakeCycle])) / SCALING_FACTOR;
                 }
             }
             
