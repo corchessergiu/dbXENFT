@@ -34,6 +34,8 @@ contract DBXeNFTFactory is ReentrancyGuard {
      */
     DBXENFT public immutable dbxenft;
 
+    address public devAddress;
+
     /**
      * Index (0-based) of the current cycle.
      * 
@@ -319,11 +321,13 @@ contract DBXeNFTFactory is ReentrancyGuard {
     constructor(
         address dbxAddress,
         address xenftAddress,
-        address _xenCrypto
+        address _xenCrypto,
+        address _devAddress
     ) {
         dxn = IERC20(dbxAddress);
         xenft = IXENFT(xenftAddress);
         xenCrypto = IXENCrypto(_xenCrypto);
+        devAddress = _devAddress;
         i_periodDuration = 1 days;
         i_initialTimestamp = block.timestamp;
         dbxenft = new DBXENFT();
@@ -371,6 +375,9 @@ contract DBXeNFTFactory is ReentrancyGuard {
         }
         require(msg.value >= fee, "Payment less than fee");
 
+        uint256 devFee = calculateDevFee(fee);
+        uint256 updatedFee = fee - devFee;
+
         uint256 dbxenftId = dbxenft.mintDBXENFT(msg.sender);
         uint256 currentCycleMem = currentCycle;
 
@@ -384,18 +391,18 @@ contract DBXeNFTFactory is ReentrancyGuard {
 
             if(currentCycleMem == currentStartedCycle) {
                 summedCyclePowers[currentCycleMem] += 1e18;
-                cycleAccruedFees[currentCycleMem] = cycleAccruedFees[currentCycleMem] + fee;
+                cycleAccruedFees[currentCycleMem] = cycleAccruedFees[currentCycleMem] + updatedFee;
 
             } else {
                 pendingPower += 1e18;
-                pendingFees+=fee;
+                pendingFees += updatedFee;
             }
         } else {
             setUpNewCycle();
             dbxenftEntryPower[dbxenftId] = estimatedReward;
             tokenEntryCycle[dbxenftId] = currentCycleMem;
             totalEntryPowerPerCycle[currentCycleMem] += estimatedReward;
-            cycleAccruedFees[currentCycleMem] = cycleAccruedFees[currentCycleMem] + fee;
+            cycleAccruedFees[currentCycleMem] = cycleAccruedFees[currentCycleMem] + updatedFee;
 
             if(currentCycleMem != 0) {
                 lastFeeUpdateCycle[dbxenftId] = lastStartedCycle + 1;
@@ -406,6 +413,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
 
         xenft.transferFrom(msg.sender, address(this), xenftId);
         sendViaCall(payable(msg.sender), msg.value - fee);
+        sendViaCall(payable(devAddress), devFee);
 
         emit DBXeNFTMinted(
             currentCycleMem,
@@ -461,8 +469,10 @@ contract DBXeNFTFactory is ReentrancyGuard {
 
         uint256 stakeFee = calcStakeFee(amount);
         require(msg.value >= stakeFee, "Value less than staking fee");
+        uint256 devFee = calculateDevFee(stakeFee);
+        uint256 updatedFee = stakeFee - devFee;
 
-        cycleAccruedFees[currentCycleMem] += stakeFee;
+        cycleAccruedFees[currentCycleMem] += updatedFee;
 
         uint256 cycleToSet = currentCycleMem + 1;
 
@@ -492,6 +502,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
 
         dxn.safeTransferFrom(msg.sender, address(this), amount);
         sendViaCall(payable(msg.sender), msg.value - stakeFee);
+        sendViaCall(payable(devAddress), devFee);
         emit Staked(
             currentCycleMem,
             tokenId,
@@ -631,6 +642,12 @@ contract DBXeNFTFactory is ReentrancyGuard {
         );
     }
 
+    function setDevAddress(address newDevAddress) public {
+        require(msg.sender == devAddress, "Only dev can change address");
+
+        devAddress = newDevAddress;
+    }
+
     /**
      * Calculated according to the following formula:
      * ProtocolFee = MAX( (Xen*MAX( 1-0.0011389 * MAX(MaturityDays,0) , 0.5) )/ BASE_XEN), MinCost).
@@ -727,6 +744,12 @@ contract DBXeNFTFactory is ReentrancyGuard {
             eea
         );
         return mintReward * vmuCount * 1 ether;
+    }
+
+    function calculateDevFee(uint256 inputValue) public pure returns (uint256) {
+        uint256 percentage = (inputValue * 25) / 1000;
+
+        return percentage;
     }
 
     /**
