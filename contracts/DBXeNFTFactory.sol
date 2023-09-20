@@ -9,6 +9,7 @@ import "./interfaces/IXENCrypto.sol";
 import "./interfaces/IXENFT.sol";
 import "./libs/MintInfo.sol";
 import "./DBXENFT.sol";
+import "./XENFTStorage.sol";
 
 contract DBXeNFTFactory is ReentrancyGuard {
     using MintInfo for uint256;
@@ -229,6 +230,8 @@ contract DBXeNFTFactory is ReentrancyGuard {
      */
     mapping(uint256 => uint256) public dbxenftUnderlyingXENFT;
 
+    mapping(uint256 => XENFTStorage) public dbxenftUnderlyingStorage;
+
      /**
      * @dev Emitted when calling {mintDBXENFT} marking the new current `cycle`,
      * `calculatedCycleReward` and `summedCycleStakes`.
@@ -357,7 +360,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
 
         uint256 mintInfo = xenft.mintInfo(xenftId);
 
-        (uint256 term, uint256 maturityTs, , , , , , , bool redeemed) = mintInfo
+        (uint256 term, , , , , , , , bool redeemed) = mintInfo
             .decodeMintInfo();
 
         uint256 fee;
@@ -369,7 +372,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
 
             fee = _calculateFee(
                 estimatedReward,
-                maturityTs,
+                mintInfo.getMaturityTs(),
                 term
             );
         }
@@ -410,8 +413,11 @@ contract DBXeNFTFactory is ReentrancyGuard {
         }
     
         dbxenftUnderlyingXENFT[dbxenftId] = xenftId;
+       
+        XENFTStorage dbxenftStorage = new XENFTStorage();
+        dbxenftUnderlyingStorage[dbxenftId] = dbxenftStorage;
 
-        xenft.transferFrom(msg.sender, address(this), xenftId);
+        xenft.transferFrom(msg.sender, address(dbxenftStorage), xenftId);
         sendViaCall(payable(msg.sender), msg.value - fee);
         sendViaCall(payable(devAddress), devFee);
 
@@ -633,7 +639,8 @@ contract DBXeNFTFactory is ReentrancyGuard {
             }
         }
 
-        xenft.bulkClaimMintReward(xenftId, msg.sender);
+        XENFTStorage xenftStorage = dbxenftUnderlyingStorage[tokenId];
+        xenftStorage.claimXenFromStorage(address(xenft), msg.sender, xenftId);
         emit XenRewardsClaimed(
             currentCycle,
             tokenId, 
