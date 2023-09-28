@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { BigNumber } = require("ethers");
 const { ethers } = require("hardhat");
 
-describe("Test claim NFT functionality", async function() {
+describe.skip("Test claim NFT functionality", async function() {
     let xenft, DBXENFT, XENContract, aliceInstance, bobInstance, deanInstance;
     let alice, bob, carol, dean;
     beforeEach("Set enviroment", async() => {

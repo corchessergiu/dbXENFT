@@ -77,9 +77,9 @@ describe("Test unstake functionality", async function() {
             }
         });
 
-        dbXeNFTFactory = await DBXeNFTFactory.deploy(DBX.address, xenft.address, XENContract.address);
+        dbXeNFTFactory = await DBXeNFTFactory.deploy(DBX.address, xenft.address, XENContract.address, deployer.address);
         await dbXeNFTFactory.deployed();
-        const DBXeNFTAddress = await dbXeNFTFactory.DBXENFTInstance()
+        const DBXeNFTAddress = await dbXeNFTFactory.dbxenft()
         DBXeNFT = await ethers.getContractAt("DBXENFT", DBXeNFTAddress, deployer)
 
         dbXeNFTFactoryAlice = dbXeNFTFactory.connect(alice)
@@ -107,29 +107,29 @@ describe("Test unstake functionality", async function() {
     it("Basic unstake case", async function(){
         await xenft.bulkClaimRank(13, 37)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10001, {value: ethers.utils.parseEther("1")})
        
         await xenftAlice.bulkClaimRank(49, 77)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, {value: ethers.utils.parseEther("1")})
-        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("233"), 1, {value: ethers.utils.parseEther("5")})
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("233"), 2, {value: ethers.utils.parseEther("5")})
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
         await xenft.bulkClaimRank(41, 2)
         await xenft.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactory.burnNFT(10003, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10003, {value: ethers.utils.parseEther("1")})
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
         await xenft.bulkClaimRank(2, 33)
         await xenft.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactory.burnNFT(10004, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10004, {value: ethers.utils.parseEther("1")})
         
-        await dbXeNFTFactoryAlice.unstake(1, ethers.utils.parseEther("233"))
-        expect(await dbXeNFTFactory.summedCycleStakes(2)).to.equal(
+        await dbXeNFTFactoryAlice.unstake(2, ethers.utils.parseEther("233"))
+        expect(await dbXeNFTFactory.summedCyclePowers(2)).to.equal(
             (await dbXeNFTFactory.rewardPerCycle(0))
             .add(await dbXeNFTFactory.rewardPerCycle(1))
             .add(await dbXeNFTFactory.rewardPerCycle(2))
@@ -140,51 +140,51 @@ describe("Test unstake functionality", async function() {
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10005)
-        await dbXeNFTFactory.burnNFT(10005, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10005, {value: ethers.utils.parseEther("1")})
         
-        expect(await dbXeNFTFactory.tokenWithdrawableStake(1)).to.equal(0)
+        expect(await dbXeNFTFactory.dbxenftWithdrawableStake(1)).to.equal(0)
         
     })
 
     it("Partial unstake", async function(){
         await xenft.bulkClaimRank(13, 37)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10001, {value: ethers.utils.parseEther("1")})
        
         await xenftAlice.bulkClaimRank(49, 77)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, {value: ethers.utils.parseEther("1")})
-        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("233"), 1, {value: ethers.utils.parseEther("5")})
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("233"), 2, {value: ethers.utils.parseEther("5")})
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
         await xenft.bulkClaimRank(41, 2)
         await xenft.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactory.burnNFT(10003, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10003, {value: ethers.utils.parseEther("1")})
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
         await xenft.bulkClaimRank(2, 33)
         await xenft.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactory.burnNFT(10004, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10004, {value: ethers.utils.parseEther("1")})
 
         
-        await dbXeNFTFactoryAlice.unstake(1, ethers.utils.parseEther("33"))
+        await dbXeNFTFactoryAlice.unstake(2, ethers.utils.parseEther("33"))
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10005)
-        await dbXeNFTFactory.burnNFT(10005, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10005, {value: ethers.utils.parseEther("1")})
         
-        expect(await dbXeNFTFactory.tokenWithdrawableStake(1)).to.equal(ethers.utils.parseEther("200"))
+        expect(await dbXeNFTFactory.dbxenftWithdrawableStake(2)).to.equal(ethers.utils.parseEther("200"))
 
-        const aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(1)
-        const aliceDBXeNFTExtraPowRemaining = aliceBasePow.mul(ethers.utils.parseEther("200")).div(ethers.utils.parseEther("1000"))
-        expect(await dbXeNFTFactory.summedCycleStakes(2)).to.equal(
+        const aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(2)
+        const aliceDBXeNFTExtraPowRemaining = aliceBasePow.mul(ethers.utils.parseEther("200")).div(ethers.utils.parseEther("100"))
+        expect(await dbXeNFTFactory.summedCyclePowers(2)).to.equal(
             (await dbXeNFTFactory.rewardPerCycle(0))
             .add(await dbXeNFTFactory.rewardPerCycle(1))
             .add(await dbXeNFTFactory.rewardPerCycle(2))
@@ -195,43 +195,43 @@ describe("Test unstake functionality", async function() {
     it("Unstake multiple times during the same cycle", async function() {
         await xenft.bulkClaimRank(3, 33)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10001, {value: ethers.utils.parseEther("1")})
        
         await xenftAlice.bulkClaimRank(11, 20)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, {value: ethers.utils.parseEther("1")})
-        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1000"), 1, {value: ethers.utils.parseEther("5")})
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1000"), 2, {value: ethers.utils.parseEther("5")})
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
         await xenft.bulkClaimRank(7, 7)
         await xenft.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactory.burnNFT(10003, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10003, {value: ethers.utils.parseEther("1")})
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
         await xenft.bulkClaimRank(6, 6)
         await xenft.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactory.burnNFT(10004, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10004, {value: ethers.utils.parseEther("1")})
 
         
-        await dbXeNFTFactoryAlice.unstake(1, ethers.utils.parseEther("1"))
-        await dbXeNFTFactoryAlice.unstake(1, ethers.utils.parseEther("499"))
+        await dbXeNFTFactoryAlice.unstake(2, ethers.utils.parseEther("1"))
+        await dbXeNFTFactoryAlice.unstake(2, ethers.utils.parseEther("499"))
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10005)
-        await dbXeNFTFactory.burnNFT(10005, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10005, {value: ethers.utils.parseEther("1")})
         
-        expect(await dbXeNFTFactory.tokenWithdrawableStake(1)).to.equal(ethers.utils.parseEther("500"))
+        expect(await dbXeNFTFactory.dbxenftWithdrawableStake(2)).to.equal(ethers.utils.parseEther("500"))
 
-        const aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(1)
-        const aliceDBXeNFTExtraPowRemaining = aliceBasePow.mul(ethers.utils.parseEther("500")).div(ethers.utils.parseEther("1000"))
-        expect(await dbXeNFTFactory.summedCycleStakes(2)).to.equal(
+        const aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(2)
+        const aliceDBXeNFTExtraPowRemaining = aliceBasePow.mul(ethers.utils.parseEther("500")).div(ethers.utils.parseEther("100"))
+        expect(await dbXeNFTFactory.summedCyclePowers(2)).to.equal(
             (await dbXeNFTFactory.rewardPerCycle(0))
             .add(await dbXeNFTFactory.rewardPerCycle(1))
             .add(await dbXeNFTFactory.rewardPerCycle(2))
@@ -239,48 +239,48 @@ describe("Test unstake functionality", async function() {
         )
     })
 
-    it.only("Unstake during inactive cycle", async function() {
+    it("Unstake during inactive cycle", async function() {
         await xenft.bulkClaimRank(3, 33)
         await xenft.approve(dbXeNFTFactory.address, 10001)
-        await dbXeNFTFactory.burnNFT(10001, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10001, {value: ethers.utils.parseEther("1")})
        
         await xenftAlice.bulkClaimRank(11, 20)
         await xenftAlice.approve(dbXeNFTFactory.address, 10002)
-        await dbXeNFTFactoryAlice.burnNFT(10002, {value: ethers.utils.parseEther("1")})
-        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1000"), 1, {value: ethers.utils.parseEther("5")})
+        await dbXeNFTFactoryAlice.mintDBXENFT(10002, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactoryAlice.stake(ethers.utils.parseEther("1000"), 2, {value: ethers.utils.parseEther("5")})
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
         await xenft.bulkClaimRank(7, 7)
         await xenft.approve(dbXeNFTFactory.address, 10003)
-        await dbXeNFTFactory.burnNFT(10003, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10003, {value: ethers.utils.parseEther("1")})
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
-        await dbXeNFTFactoryAlice.unstake(1, ethers.utils.parseEther("120"))
-        await dbXeNFTFactoryAlice.unstake(1, ethers.utils.parseEther("380"))
+        await dbXeNFTFactoryAlice.unstake(2, ethers.utils.parseEther("120"))
+        await dbXeNFTFactoryAlice.unstake(2, ethers.utils.parseEther("380"))
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")        
 
         await xenft.bulkClaimRank(6, 6)
         await xenft.approve(dbXeNFTFactory.address, 10004)
-        await dbXeNFTFactory.burnNFT(10004, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10004, {value: ethers.utils.parseEther("1")})
 
         await hre.ethers.provider.send("evm_increaseTime", [60 * 60 * 24])
         await hre.ethers.provider.send("evm_mine")
 
         await xenft.bulkClaimRank(1, 1)
         await xenft.approve(dbXeNFTFactory.address, 10005)
-        await dbXeNFTFactory.burnNFT(10005, {value: ethers.utils.parseEther("1")})
+        await dbXeNFTFactory.mintDBXENFT(10005, {value: ethers.utils.parseEther("1")})
         
-        expect(await dbXeNFTFactory.tokenWithdrawableStake(1)).to.equal(ethers.utils.parseEther("500"))
+        expect(await dbXeNFTFactory.dbxenftWithdrawableStake(2)).to.equal(ethers.utils.parseEther("500"))
 
-        const aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(1)
-        const aliceDBXeNFTExtraPowRemaining = aliceBasePow.mul(ethers.utils.parseEther("500")).div(ethers.utils.parseEther("1000"))
-        expect(await dbXeNFTFactory.summedCycleStakes(3)).to.equal(
+        const aliceBasePow = await dbXeNFTFactory.baseDBXeNFTPower(2)
+        const aliceDBXeNFTExtraPowRemaining = aliceBasePow.mul(ethers.utils.parseEther("500")).div(ethers.utils.parseEther("100"))
+        expect(await dbXeNFTFactory.summedCyclePowers(3)).to.equal(
             (await dbXeNFTFactory.rewardPerCycle(0))
             .add(await dbXeNFTFactory.rewardPerCycle(1))
             .add(await dbXeNFTFactory.rewardPerCycle(3))
