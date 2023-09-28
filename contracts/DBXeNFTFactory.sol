@@ -233,6 +233,9 @@ contract DBXeNFTFactory is ReentrancyGuard {
      */
     mapping(uint256 => uint256) public dbxenftUnderlyingXENFT;
 
+    /**
+     * Contains the address of the storage contract holding the XENFT for given DBXENFT.
+     */
     mapping(uint256 => XENFTStorage) public dbxenftUnderlyingStorage;
 
      /**
@@ -770,7 +773,7 @@ contract DBXeNFTFactory is ReentrancyGuard {
      * @param inputValue protocol fee from which the dev fee is deducted.
      */
     function calculateDevFee(uint256 inputValue) public pure returns (uint256) {
-        uint256 percentage = (inputValue * 25) / 1000;
+        uint256 percentage = Math.mulDiv(inputValue, 25, 1000);
 
         return percentage;
     }
